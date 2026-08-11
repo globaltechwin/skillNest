@@ -68,15 +68,15 @@ export function TeachersCarousel({ teachers }: Props) {
                 key={teacher.id}
                 className="overflow-hidden hover:shadow-lg transition-shadow snap-start shrink-0 w-[calc(33.333%-1rem)] min-w-[260px]"
               >
-                <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
+                <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
                   {teacher.profilePhotoUrl ? (
                     <img
                       src={teacher.profilePhotoUrl}
                       alt={`${teacher.firstName} ${teacher.lastName}`}
-                      className="size-20 rounded-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="size-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
+                    <div className="absolute inset-0 bg-blue-500 flex items-center justify-center text-white text-4xl font-bold">
                       {initials || "?"}
                     </div>
                   )}
