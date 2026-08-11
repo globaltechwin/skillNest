@@ -59,16 +59,16 @@ export default function FeaturedTeachersSection() {
               key={teacher.id}
               className="border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
+              <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
                 {teacher.profilePhotoUrl ? (
                   <img
                     src={teacher.profilePhotoUrl}
                     alt={`${teacher.firstName ?? ""} ${teacher.lastName ?? ""}`}
-                    className="size-20 rounded-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
                   <div
-                    className={`size-20 rounded-full ${colorCycle[i % colorCycle.length]} flex items-center justify-center text-white text-2xl font-bold`}
+                    className={`absolute inset-0 ${colorCycle[i % colorCycle.length]} flex items-center justify-center text-white text-4xl font-bold`}
                   >
                     {(teacher.firstName ?? "?").charAt(0)}
                   </div>
