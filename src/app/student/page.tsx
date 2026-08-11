@@ -20,6 +20,7 @@ import { Card } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { TeachersCarousel } from "@/components/TeachersCarousel";
 import { getFeaturedTeachersWithRatings } from "@/app/student/teachers/actions";
+import Image from "next/image";
 
 const subjects = [
   { name: "English", color: "bg-red-100 text-red-600", icon: "A" },
@@ -32,10 +33,30 @@ const subjects = [
 ];
 
 const steps = [
-  { num: 1, title: "Choose a Subject", desc: "Pick the subject you want to learn", icon: BookOpen },
-  { num: 2, title: "Select a Tutor", desc: "View tutors and choose the best fit", icon: Users },
-  { num: 3, title: "Book a Class", desc: "Schedule your class at your convenience", icon: CalendarDays },
-  { num: 4, title: "Start Learning", desc: "Join live classes and achieve your goals", icon: CheckCircle },
+  {
+    num: 1,
+    title: "Choose a Subject",
+    desc: "Pick the subject you want to learn",
+    icon: BookOpen,
+  },
+  {
+    num: 2,
+    title: "Select a Tutor",
+    desc: "View tutors and choose the best fit",
+    icon: Users,
+  },
+  {
+    num: 3,
+    title: "Book a Class",
+    desc: "Schedule your class at your convenience",
+    icon: CalendarDays,
+  },
+  {
+    num: 4,
+    title: "Start Learning",
+    desc: "Join live classes and achieve your goals",
+    icon: CheckCircle,
+  },
 ];
 
 export default async function StudentOverviewPage() {
@@ -48,7 +69,13 @@ export default async function StudentOverviewPage() {
   });
   if (!user || user.role !== "STUDENT") redirect("/login");
 
-  const [enrolledCount, pendingCount, assignmentCount, upcomingClasses, recentConversations] = await Promise.all([
+  const [
+    enrolledCount,
+    pendingCount,
+    assignmentCount,
+    upcomingClasses,
+    recentConversations,
+  ] = await Promise.all([
     prisma.courseEnrollment.count({
       where: { studentUserId: user.id, status: "ACCEPTED" },
     }),
@@ -113,13 +140,16 @@ export default async function StudentOverviewPage() {
               <div className="flex size-10 items-center justify-center rounded-xl bg-blue-600">
                 <GraduationCap className="size-6 text-white" />
               </div>
-              <span className="text-sm font-medium text-blue-600">SkillNest Academy</span>
+              <span className="text-sm font-medium text-blue-600">
+                SkillNest Academy
+              </span>
             </div>
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3">
               Welcome back, {user.firstName || "Student"} 👋
             </h1>
             <p className="text-gray-600 text-lg mb-6 max-w-md">
-              Continue your learning journey. Explore courses, join classes, and track your progress.
+              Continue your learning journey. Explore courses, join classes, and
+              track your progress.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -144,7 +174,9 @@ export default async function StudentOverviewPage() {
                 { label: "Pending Requests", value: String(pendingCount) },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stat.value}
+                  </p>
                   <p className="text-sm text-gray-500">{stat.label}</p>
                 </div>
               ))}
@@ -155,9 +187,12 @@ export default async function StudentOverviewPage() {
             <div className="relative bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
               <div className="aspect-video bg-gradient-to-br from-blue-200 to-orange-200 rounded-xl flex items-center justify-center">
                 <div className="text-center">
-                  <GraduationCap className="size-16 text-blue-600 mx-auto mb-3" />
-                  <p className="text-gray-600 font-medium">Your Learning Dashboard</p>
-                  <p className="text-sm text-gray-400 mt-1">Track courses, classes & progress</p>
+                  <Image
+                    src="/hero.png"
+                    alt="Student Dashboard"
+                    width={1000}
+                    height={1000}
+                  />
                 </div>
               </div>
             </div>
@@ -177,10 +212,14 @@ export default async function StudentOverviewPage() {
               href="/student/courses"
               className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all group"
             >
-              <div className={`size-14 rounded-xl flex items-center justify-center text-xl font-bold ${subject.color} group-hover:scale-110 transition-transform`}>
+              <div
+                className={`size-14 rounded-xl flex items-center justify-center text-xl font-bold ${subject.color} group-hover:scale-110 transition-transform`}
+              >
                 {subject.icon}
               </div>
-              <span className="text-sm font-medium text-gray-700">{subject.name}</span>
+              <span className="text-sm font-medium text-gray-700">
+                {subject.name}
+              </span>
             </Link>
           ))}
         </div>
@@ -206,8 +245,12 @@ export default async function StudentOverviewPage() {
                     {step.num}
                   </span>
                 </div>
-                <h3 className="text-base font-semibold text-gray-900 mb-1">{step.title}</h3>
-                <p className="text-sm text-gray-500 max-w-[200px]">{step.desc}</p>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-gray-500 max-w-[200px]">
+                  {step.desc}
+                </p>
               </div>
             </div>
           ))}
@@ -217,14 +260,40 @@ export default async function StudentOverviewPage() {
       {/* Stats Cards */}
       <section>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <SummaryCard label="My Courses" value={enrolledCount} icon={BookOpen} color="text-blue-600" bg="bg-blue-100" href="/student/courses" />
-          <SummaryCard label="Assignments" value={assignmentCount} icon={FileText} color="text-amber-600" bg="bg-amber-100" href="/student/assignments" />
-          <SummaryCard label="Pending Requests" value={pendingCount} icon={Clock} color="text-emerald-600" bg="bg-emerald-100" href="/student/courses" />
+          <SummaryCard
+            label="My Courses"
+            value={enrolledCount}
+            icon={BookOpen}
+            color="text-blue-600"
+            bg="bg-blue-100"
+            href="/student/courses"
+          />
+          <SummaryCard
+            label="Assignments"
+            value={assignmentCount}
+            icon={FileText}
+            color="text-amber-600"
+            bg="bg-amber-100"
+            href="/student/assignments"
+          />
+          <SummaryCard
+            label="Pending Requests"
+            value={pendingCount}
+            icon={Clock}
+            color="text-emerald-600"
+            bg="bg-emerald-100"
+            href="/student/courses"
+          />
           <Link href="/student/teachers">
             <Card className="p-5 hover:shadow-md transition-shadow hover:border-blue-200 group cursor-pointer">
               <div className="flex items-center gap-4">
-                <div className={`flex size-11 items-center justify-center rounded-xl bg-purple-100 group-hover:scale-110 transition-transform`}>
-                  <Users className={`size-5 text-purple-600`} strokeWidth={1.8} />
+                <div
+                  className={`flex size-11 items-center justify-center rounded-xl bg-purple-100 group-hover:scale-110 transition-transform`}
+                >
+                  <Users
+                    className={`size-5 text-purple-600`}
+                    strokeWidth={1.8}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">Browse</p>
@@ -240,8 +309,12 @@ export default async function StudentOverviewPage() {
       <section>
         <div className="flex items-end justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Featured Teachers</h2>
-            <p className="text-gray-500 mt-1">Learn from the Best. Achieve Your Best.</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Featured Teachers
+            </h2>
+            <p className="text-gray-500 mt-1">
+              Learn from the Best. Achieve Your Best.
+            </p>
           </div>
           <Link
             href="/student/teachers"
@@ -257,12 +330,19 @@ export default async function StudentOverviewPage() {
             <div className="size-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
               <Users className="size-7 text-blue-600" />
             </div>
-            <p className="text-gray-900 font-medium">No featured teachers yet</p>
-            <p className="text-sm text-gray-500 mt-1">Approved teachers will appear here soon.</p>
+            <p className="text-gray-900 font-medium">
+              No featured teachers yet
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Approved teachers will appear here soon.
+            </p>
           </Card>
         )}
         <div className="sm:hidden mt-6 text-center">
-          <Link href="/student/teachers" className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline">
+          <Link
+            href="/student/teachers"
+            className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
+          >
             View All Teachers <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -284,7 +364,9 @@ export default async function StudentOverviewPage() {
                   className="block p-3 rounded-lg border border-border hover:border-emerald-200 hover:bg-emerald-50/50 transition-colors"
                 >
                   <p className="font-medium text-foreground">{cls.title}</p>
-                  <p className="text-sm text-muted-foreground">{cls.course.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {cls.course.title}
+                  </p>
                   <p className="text-xs text-emerald-600 mt-1">
                     {new Date(cls.startTime).toLocaleDateString("en-US", {
                       weekday: "short",
@@ -336,7 +418,9 @@ export default async function StudentOverviewPage() {
                     className="block p-3 rounded-lg border border-border hover:border-blue-200 hover:bg-blue-50/50 transition-colors"
                   >
                     <p className="font-medium text-foreground">{name}</p>
-                    <p className="text-sm text-muted-foreground truncate">{lastMsg}</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {lastMsg}
+                    </p>
                   </Link>
                 );
               })}
@@ -372,7 +456,9 @@ export default async function StudentOverviewPage() {
           ].map((feat) => (
             <div key={feat.label} className="flex flex-col items-center gap-2">
               <feat.icon className="size-6" />
-              <span className="text-xs font-medium leading-tight">{feat.label}</span>
+              <span className="text-xs font-medium leading-tight">
+                {feat.label}
+              </span>
             </div>
           ))}
         </div>
@@ -400,7 +486,9 @@ function SummaryCard({
     <Link href={href}>
       <Card className="p-5 hover:shadow-md transition-shadow hover:border-blue-200 group cursor-pointer">
         <div className="flex items-center gap-4">
-          <div className={`flex size-11 items-center justify-center rounded-xl ${bg} group-hover:scale-110 transition-transform`}>
+          <div
+            className={`flex size-11 items-center justify-center rounded-xl ${bg} group-hover:scale-110 transition-transform`}
+          >
             <Icon className={`size-5 ${color}`} strokeWidth={1.8} />
           </div>
           <div>
