@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GraduationCap, Phone, Mail, MapPin } from "lucide-react";
 
 const QUICK_LINKS = [
   { label: "About Us", href: "/about" },
@@ -27,24 +28,26 @@ const SUPPORT = [
 
 export function StudentFooter() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
+    <footer className="bg-blue-900 text-white">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="size-9 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">SN</span>
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="relative">
+                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-blue-900" />
               </div>
               <div>
-                <span className="text-white font-bold text-lg leading-tight">SkillNest</span>
-                <span className="block text-[10px] text-slate-400 tracking-widest uppercase -mt-0.5">
-                  Academy
-                </span>
+                <span className="text-xl font-bold">SkillNest</span>
+                <span className="text-[10px] text-blue-300 block -mt-1">ACADEMY</span>
+                <span className="text-[8px] text-orange-400 italic">&bull; Explore &bull; Discover &bull; Achieve &bull;</span>
               </div>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed mb-4">
-              SkillNest Academy connects students with expert tutors for online &amp; offline
+            <p className="text-sm text-blue-300 leading-relaxed max-w-sm mb-4">
+              SkillNest Academy connects students with expert tutors for online & offline
               learning across subjects and activities.
             </p>
             <div className="flex gap-3">
@@ -52,9 +55,10 @@ export function StudentFooter() {
                 <a
                   key={social}
                   href="#"
-                  className="size-8 rounded-full bg-slate-800 hover:bg-primary/20 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  aria-label={social}
                 >
-                  <span className="text-xs text-slate-400 hover:text-primary capitalize">
+                  <span className="text-xs text-blue-300 hover:text-white capitalize">
                     {social[0].toUpperCase()}
                   </span>
                 </a>
@@ -64,11 +68,11 @@ export function StudentFooter() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold text-sm mb-3">Quick Links</h3>
+            <h3 className="text-white font-semibold text-sm mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {QUICK_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-blue-300 hover:text-white transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -78,11 +82,11 @@ export function StudentFooter() {
 
           {/* Subjects */}
           <div>
-            <h3 className="text-white font-semibold text-sm mb-3">Subjects</h3>
+            <h3 className="text-white font-semibold text-sm mb-4">Subjects</h3>
             <ul className="space-y-2">
               {SUBJECTS.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-blue-300 hover:text-white transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -90,35 +94,31 @@ export function StudentFooter() {
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Support & Contact */}
           <div>
-            <h3 className="text-white font-semibold text-sm mb-3">Support</h3>
+            <h3 className="text-white font-semibold text-sm mb-4">Support</h3>
             <ul className="space-y-2">
               {SUPPORT.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-blue-300 hover:text-white transition-colors">
                     {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-white font-semibold text-sm mb-3">Contact Us</h3>
+            <h3 className="text-white font-semibold text-sm mt-6 mb-4">Contact Us</h3>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-slate-500 mt-0.5">📞</span>
-                <span className="text-sm text-slate-400">+91 12345 67890</span>
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-blue-400" />
+                <span className="text-sm text-blue-300">+91 12345 67890</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-400" />
+                <span className="text-sm text-blue-300">support@skillnestacademy.com</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-slate-500 mt-0.5">✉️</span>
-                <span className="text-sm text-slate-400">support@skillnestacademy.com</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-slate-500 mt-0.5">📍</span>
-                <span className="text-sm text-slate-400">Chennai, Tamil Nadu, India</span>
+                <MapPin className="w-4 h-4 text-blue-400 mt-0.5" />
+                <span className="text-sm text-blue-300">Chennai, Tamil Nadu, India</span>
               </li>
             </ul>
           </div>
@@ -126,10 +126,10 @@ export function StudentFooter() {
       </div>
 
       {/* Copyright */}
-      <div className="border-t border-slate-800">
+      <div className="border-t border-blue-800">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-xs text-slate-500">
-            © {new Date().getFullYear()} SkillNest Academy. All Rights Reserved.
+          <p className="text-center text-sm text-blue-400">
+            &copy; {new Date().getFullYear()} SkillNest Academy. All Rights Reserved.
           </p>
         </div>
       </div>

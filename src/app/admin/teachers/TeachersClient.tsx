@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition, useCallback, useEffect } from "react";
+import { useState, useTransition, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, Clock, CheckCircle2, XCircle, Pencil, ChevronLeft, ChevronRight, Eye, BookOpen, Award, Clock as ClockIcon } from "lucide-react";
+import { Search, Clock, CheckCircle2, XCircle, Pencil, ChevronLeft, ChevronRight, Eye, BookOpen, Award, Clock as ClockIcon, Camera, Upload, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { updateTeacherStatus, getTeacherApplication, type TeacherRow, type TeacherApplicationData } from "../actions";
+import { updateTeacherStatus, getTeacherApplication, uploadTeacherPhoto, type TeacherRow, type TeacherApplicationData } from "../actions";
 
 type Props = {
   teachers: TeacherRow[];
@@ -20,6 +20,81 @@ const DAY_LABELS: Record<string, string> = {
   MONDAY: "Mon", TUESDAY: "Tue", WEDNESDAY: "Wed", THURSDAY: "Thu",
   FRIDAY: "Fri", SATURDAY: "Sat", SUNDAY: "Sun",
 };
+
+function InlinePhotoUpload({ teacherId, teacherName }: { teacherId: string; teacherName: string }) {
+  const [isUploading, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setError(null);
+    setSuccess(false);
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Max 5MB");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Invalid type");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("photo", file);
+
+    startTransition(async () => {
+      const result = await uploadTeacherPhoto(teacherId, formData);
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        setError(result.error);
+      }
+    });
+  };
+
+  if (success) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
+        <Check className="size-3" /> Done
+      </span>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isUploading}
+        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border border-border bg-background hover:bg-muted disabled:opacity-50 transition-colors"
+        title={`Upload photo for ${teacherName}`}
+      >
+        {isUploading ? (
+          <Upload className="size-3 animate-spin" />
+        ) : (
+          <Camera className="size-3" />
+        )}
+        {isUploading ? "Uploading..." : "Photo"}
+      </button>
+      {error && <span className="text-xs text-red-600 ml-1">{error}</span>}
+    </div>
+  );
+}
 
 export function TeachersClient({ teachers, total, page, totalPages }: Props) {
   const router = useRouter();
@@ -175,6 +250,10 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                     <td className="px-4 py-3"><StatusBadge status={teacher.status} /></td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
+                        <InlinePhotoUpload
+                          teacherId={teacher.id}
+                          teacherName={`${teacher.firstName || ""} ${teacher.lastName || ""}`.trim() || "Teacher"}
+                        />
                         <Button variant="ghost" size="sm" onClick={() => loadApplication(teacher)} disabled={isPending}>
                           <Eye className="size-3.5 mr-1" /> View
                         </Button>
@@ -217,13 +296,28 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
             {/* Dialog Header */}
             <div className="sticky top-0 bg-card border-b border-border px-6 py-4 z-10">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">Teacher Application</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {viewingTeacher.firstName || viewingTeacher.lastName
-                      ? `${viewingTeacher.firstName || ""} ${viewingTeacher.lastName || ""}`.trim()
-                      : "Unnamed Teacher"} — {viewingTeacher.email}
-                  </p>
+                <div className="flex items-center gap-4">
+                  {applicationData?.profile.profilePhotoUrl ? (
+                    <img
+                      src={applicationData.profile.profilePhotoUrl}
+                      alt={viewingTeacher.firstName || "Teacher"}
+                      className="size-14 rounded-full object-cover ring-2 ring-border shrink-0"
+                    />
+                  ) : (
+                    <div className="size-14 rounded-full bg-muted flex items-center justify-center ring-2 ring-border shrink-0">
+                      <span className="text-lg font-bold text-muted-foreground">
+                        {(viewingTeacher.firstName?.[0] || "") + (viewingTeacher.lastName?.[0] || "") || "?"}
+                      </span>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Teacher Application</h3>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {viewingTeacher.firstName || viewingTeacher.lastName
+                        ? `${viewingTeacher.firstName || ""} ${viewingTeacher.lastName || ""}`.trim()
+                        : "Unnamed Teacher"} — {viewingTeacher.email}
+                    </p>
+                  </div>
                 </div>
                 <button onClick={() => { setViewingTeacher(null); setApplicationData(null); }} className="text-muted-foreground hover:text-foreground">
                   <XCircle className="size-5" />

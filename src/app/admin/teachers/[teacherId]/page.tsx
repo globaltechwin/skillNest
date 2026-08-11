@@ -17,6 +17,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { TeacherActions } from "./TeacherActions";
+import { TeacherPhotoUpload } from "./TeacherPhotoUpload";
 
 const DAY_LABELS: Record<string, string> = {
   MONDAY: "Monday",
@@ -107,15 +108,13 @@ export default async function AdminTeacherDetailPage({
           {/* Profile Card */}
           <Card className="p-6">
             <div className="flex flex-col sm:flex-row gap-6">
-              {profile.profilePhotoUrl && (
-                <div className="shrink-0">
-                  <img
-                    src={profile.profilePhotoUrl}
-                    alt={fullName}
-                    className="size-24 rounded-full object-cover ring-2 ring-border"
-                  />
-                </div>
-              )}
+              <div className="shrink-0">
+                <TeacherPhotoUpload
+                  teacherUserId={teacherId}
+                  currentPhotoUrl={profile.profilePhotoUrl}
+                  teacherName={fullName}
+                />
+              </div>
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">

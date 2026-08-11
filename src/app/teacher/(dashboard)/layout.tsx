@@ -12,9 +12,6 @@ const navItems: NavItem[] = [
   { label: "My Classes", href: "/teacher/classes", icon: "Calendar" },
   { label: "My Students", href: "/teacher/students", icon: "Users" },
   { label: "Courses", href: "/teacher/courses", icon: "BookOpen" },
-  { label: "Assignments", href: "/teacher/assignments", icon: "FileText" },
-  { label: "Schedule", href: "/teacher/schedule", icon: "Clock" },
-  { label: "Messages", href: "/teacher/messages", icon: "MessageSquare" },
   { label: "Notifications", href: "/teacher/notifications", icon: "Bell" },
   { label: "Profile", href: "/teacher/profile", icon: "User" },
 ];
@@ -44,27 +41,14 @@ export default async function TeacherDashboardLayout({
   if (!profile) redirect("/teacher/apply");
   if (profile.status !== "APPROVED") redirect("/teacher/application-status");
 
-  let unreadCount = 0;
   let notificationCount = 0;
   if (profile.status === "APPROVED") {
-    [unreadCount, notificationCount] = await Promise.all([
-      prisma.message.count({
-        where: {
-          conversation: { teacherProfileId: profile.id },
-          senderUserId: { not: user.id },
-          readAt: null,
-        },
-      }),
-      prisma.notification.count({
-        where: { userId: user.id, readAt: null },
-      }),
-    ]);
+    notificationCount = await prisma.notification.count({
+      where: { userId: user.id, readAt: null },
+    });
   }
 
   const navItemsWithBadge = navItems.map((item) => {
-    if (item.href === "/teacher/messages") {
-      return { ...item, badge: unreadCount > 0 ? unreadCount : undefined };
-    }
     if (item.href === "/teacher/notifications") {
       return { ...item, badge: notificationCount > 0 ? notificationCount : undefined };
     }

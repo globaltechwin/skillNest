@@ -1,18 +1,18 @@
-import { MyCoursesClient } from "./MyCoursesClient";
+import { AllCoursesClient } from "./AllCoursesClient";
 
 export default function StudentCoursesPage() {
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold tracking-tight text-foreground">
-          My Courses
+          Courses
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Courses you are enrolled in
+          Browse all courses available from our teachers
         </p>
       </div>
 
-      <MyCoursesClient />
+      <AllCoursesClient />
     </div>
   );
 }

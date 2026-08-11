@@ -12,10 +12,6 @@ const navItems: NavItem[] = [
   { label: "Teachers", href: "/admin/teachers", icon: "Users" },
   { label: "Students", href: "/admin/students", icon: "User" },
   { label: "Courses", href: "/admin/courses", icon: "BookOpen" },
-  { label: "Enrollments", href: "/admin/enrollments", icon: "FileText" },
-  { label: "Assignments", href: "/admin/assignments", icon: "FileText" },
-  { label: "Classes", href: "/admin/classes", icon: "Calendar" },
-  { label: "Audit Log", href: "/admin/audit-log", icon: "Activity" },
   { label: "Reviews", href: "/admin/reviews", icon: "Star" },
 ];
 

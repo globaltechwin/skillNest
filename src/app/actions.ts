@@ -28,8 +28,13 @@ export async function getPublicFeaturedTeachers(): Promise<PublicTeacher[]> {
       },
     },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: 10,
   });
+
+  console.log("SERVER: Found", profiles.length, "approved teacher profiles");
+  for (const p of profiles) {
+    console.log("SERVER:", p.user.firstName, p.user.lastName, p.status);
+  }
 
   const teachers: PublicTeacher[] = await Promise.all(
     profiles.map(async (p) => {

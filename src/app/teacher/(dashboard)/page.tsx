@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Users, BookOpen, Calendar, FileText, Clock, MessageSquare, Star } from "lucide-react";
+import { Users, BookOpen, Calendar, FileText, Clock, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
@@ -38,7 +38,7 @@ export default async function TeacherOverviewPage() {
   const endOfDay = new Date(today);
   endOfDay.setHours(23, 59, 59, 999);
 
-  const [totalStudents, totalCourses, todayClasses, pendingSubmissions, recentConversations, reviewStats, recentReviews] = await Promise.all([
+  const [totalStudents, totalCourses, todayClasses, pendingSubmissions, reviewStats, recentReviews] = await Promise.all([
     prisma.courseEnrollment.count({
       where: {
         course: { teacherProfileId: profile.id },
@@ -66,21 +66,6 @@ export default async function TeacherOverviewPage() {
         },
         status: "SUBMITTED",
       },
-    }),
-    prisma.conversation.findMany({
-      where: { teacherProfileId: profile.id },
-      include: {
-        studentUser: {
-          select: { firstName: true, lastName: true },
-        },
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { content: true, createdAt: true },
-        },
-      },
-      orderBy: { lastMessageAt: "desc" },
-      take: 3,
     }),
     prisma.review.aggregate({
       where: { teacherProfileId: profile.id },
@@ -150,80 +135,37 @@ export default async function TeacherOverviewPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Calendar className="size-5 text-emerald-600" />
-            Today&apos;s Classes
-          </h2>
-          {todayClasses.length > 0 ? (
-            <div className="space-y-3">
-              {todayClasses.map((cls) => (
-                <Link
-                  key={cls.id}
-                  href={`/teacher/classes/${cls.id}`}
-                  className="block p-3 rounded-lg border border-border hover:border-emerald-200 hover:bg-emerald-50/50 transition-colors"
-                >
-                  <p className="font-medium text-foreground">{cls.title}</p>
-                  <p className="text-sm text-muted-foreground">{cls.course.title}</p>
-                  <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
-                    <Clock className="size-3" />
-                    {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
-                    {cls.meetingUrl && cls.mode !== "OFFLINE" && (
-                      <span className="text-muted-foreground ml-2">· Online</span>
-                    )}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No classes scheduled for today.
-            </p>
-          )}
-        </Card>
-        <Card className="p-6">
-          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-            <MessageSquare className="size-5 text-blue-600" />
-            Recent Messages
-          </h2>
-          {recentConversations.length > 0 ? (
-            <div className="space-y-3">
-              {recentConversations.map((conv) => {
-                const name =
-                  `${conv.studentUser.firstName || ""} ${conv.studentUser.lastName || ""}`.trim() ||
-                  "Student";
-                const lastMsg = conv.messages[0]?.content || "No messages";
-                return (
-                  <Link
-                    key={conv.id}
-                    href={`/teacher/messages/${conv.id}`}
-                    className="block p-3 rounded-lg border border-border hover:border-blue-200 hover:bg-blue-50/50 transition-colors"
-                  >
-                    <p className="font-medium text-foreground">{name}</p>
-                    <p className="text-sm text-muted-foreground truncate">{lastMsg}</p>
-                  </Link>
-                );
-              })}
+      <Card className="p-6">
+        <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Calendar className="size-5 text-emerald-600" />
+          Today&apos;s Classes
+        </h2>
+        {todayClasses.length > 0 ? (
+          <div className="space-y-3">
+            {todayClasses.map((cls) => (
               <Link
-                href="/teacher/messages"
-                className="block text-center text-sm text-blue-600 hover:underline pt-1"
+                key={cls.id}
+                href={`/teacher/classes/${cls.id}`}
+                className="block p-3 rounded-lg border border-border hover:border-emerald-200 hover:bg-emerald-50/50 transition-colors"
               >
-                View all messages
+                <p className="font-medium text-foreground">{cls.title}</p>
+                <p className="text-sm text-muted-foreground">{cls.course.title}</p>
+                <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
+                  <Clock className="size-3" />
+                  {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
+                  {cls.meetingUrl && cls.mode !== "OFFLINE" && (
+                    <span className="text-muted-foreground ml-2">· Online</span>
+                  )}
+                </p>
               </Link>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <div className="size-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                <MessageSquare className="size-7 text-blue-600" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                No messages yet. Students who contact you will appear here.
-              </p>
-            </div>
-          )}
-        </Card>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No classes scheduled for today.
+          </p>
+        )}
+      </Card>
 
       {recentReviews.length > 0 && (
         <Card className="p-6">

@@ -3,6 +3,8 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { writeFile, mkdir, unlink } from "fs/promises";
+import path from "path";
 
 const PAGE_SIZE = 20;
 
@@ -1413,6 +1415,91 @@ export async function getClassDetail(classId: string): Promise<ClassDetail | nul
         .join(" ") || "Unknown",
     enrolledStudentCount: classSession.course._count.enrollments,
   };
+}
+
+// ─── Upload Teacher Profile Photo (Admin) ──────────────────────────
+
+export type UploadTeacherPhotoResult =
+  | { success: true; url: string }
+  | { success: false; error: string };
+
+export async function uploadTeacherPhoto(
+  teacherUserId: string,
+  formData: FormData
+): Promise<UploadTeacherPhotoResult> {
+  const clerkUserId = await requireAdmin();
+
+  const adminUser = await prisma.user.findUnique({
+    where: { clerkUserId },
+    select: { id: true },
+  });
+  if (!adminUser) {
+    return { success: false, error: "Admin user not found." };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: teacherUserId },
+    select: { id: true, role: true },
+  });
+  if (!user || user.role !== "TEACHER") {
+    return { success: false, error: "Teacher not found." };
+  }
+
+  const profile = await prisma.teacherProfile.findUnique({
+    where: { userId: user.id },
+    select: { id: true, profilePhotoUrl: true },
+  });
+  if (!profile) {
+    return { success: false, error: "Teacher profile not found." };
+  }
+
+  const file = formData.get("photo") as File | null;
+  if (!file) {
+    return { success: false, error: "No file provided." };
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    return { success: false, error: "File size must be less than 5MB." };
+  }
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (!allowedTypes.includes(file.type)) {
+    return { success: false, error: "File must be an image (JPEG, PNG, WebP, or GIF)." };
+  }
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const ext = file.name.split(".").pop() || "jpg";
+  const filename = `teacher-${profile.id}-${Date.now()}.${ext}`;
+  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+
+  await mkdir(uploadsDir, { recursive: true });
+  await writeFile(path.join(uploadsDir, filename), buffer);
+
+  const photoUrl = `/uploads/${filename}`;
+
+  await prisma.teacherProfile.update({
+    where: { id: profile.id },
+    data: { profilePhotoUrl: photoUrl },
+  });
+
+  if (profile.profilePhotoUrl && profile.profilePhotoUrl.startsWith("/uploads/")) {
+    const oldPath = path.join(process.cwd(), "public", profile.profilePhotoUrl);
+    await unlink(oldPath).catch(() => {});
+  }
+
+  await prisma.adminAuditLog.create({
+    data: {
+      adminUserId: adminUser.id,
+      action: "TEACHER_PHOTO_UPDATED",
+      targetType: "TeacherProfile",
+      targetId: profile.id,
+      reason: `Admin updated profile photo for teacher`,
+    },
+  });
+
+  return { success: true, url: photoUrl };
 }
 
 // ─── Audit Log ─────────────────────────────────────────────────────

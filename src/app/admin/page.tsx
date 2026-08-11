@@ -79,38 +79,6 @@ export default async function AdminDashboardPage() {
           subtitle={`${stats.publishedCourses} published`}
         />
         <SummaryCard
-          label="Total Enrollments"
-          value={stats.totalEnrollments}
-          icon={FileText}
-          color="text-emerald-600"
-          bg="bg-emerald-100"
-          subtitle={`${stats.acceptedEnrollments} accepted`}
-        />
-        <SummaryCard
-          label="Pending Enrollments"
-          value={stats.pendingEnrollments}
-          icon={Clock}
-          color="text-amber-600"
-          bg="bg-amber-100"
-          subtitle="Awaiting review"
-        />
-        <SummaryCard
-          label="Total Assignments"
-          value={stats.totalAssignments}
-          icon={FileText}
-          color="text-rose-600"
-          bg="bg-rose-100"
-          subtitle={`${stats.totalSubmissions} submissions`}
-        />
-        <SummaryCard
-          label="Total Classes"
-          value={stats.totalClasses}
-          icon={Calendar}
-          color="text-teal-600"
-          bg="bg-teal-100"
-          subtitle={`${stats.upcomingClasses} upcoming`}
-        />
-        <SummaryCard
           label="Pending Teachers"
           value={counts.pendingTeachers}
           icon={Clock}
@@ -191,7 +159,7 @@ export default async function AdminDashboardPage() {
             href="/admin/students"
             icon={User}
             title="Manage Students"
-            description="View students, enrollments, and submissions"
+            description="View students and their activity"
             color="text-emerald-600"
             bg="bg-emerald-100"
           />
@@ -202,38 +170,6 @@ export default async function AdminDashboardPage() {
             description="Browse courses, archive or review course details"
             color="text-violet-600"
             bg="bg-violet-100"
-          />
-          <QuickAction
-            href="/admin/enrollments"
-            icon={FileText}
-            title="Manage Enrollments"
-            description="Review enrollment requests and status"
-            color="text-amber-600"
-            bg="bg-amber-100"
-          />
-          <QuickAction
-            href="/admin/assignments"
-            icon={FileText}
-            title="Manage Assignments"
-            description="View assignments, submissions, and grades"
-            color="text-rose-600"
-            bg="bg-rose-100"
-          />
-          <QuickAction
-            href="/admin/classes"
-            icon={Calendar}
-            title="Manage Classes"
-            description="Schedule and review class sessions"
-            color="text-teal-600"
-            bg="bg-teal-100"
-          />
-          <QuickAction
-            href="/admin/audit-log"
-            icon={Activity}
-            title="Audit Log"
-            description="Review all admin actions and changes"
-            color="text-orange-600"
-            bg="bg-orange-100"
           />
         </div>
       </div>
