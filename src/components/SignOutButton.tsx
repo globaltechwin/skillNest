@@ -1,7 +1,6 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -11,12 +10,16 @@ type Props = {
 };
 
 export function SignOutButton({ className, variant = "ghost" }: Props) {
-  const { signOut } = useClerk();
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  };
 
   return (
     <button
-      onClick={() => signOut(() => router.push("/login"))}
+      onClick={handleSignOut}
       className={cn(
         "inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
         variant === "default" &&

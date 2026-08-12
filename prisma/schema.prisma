@@ -13,6 +13,7 @@ model User {
   firstName            String?
   lastName             String?
   role                 UserRole               @default(STUDENT)
+  passwordHash         String?
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   adminAuditLogs       AdminAuditLog[]

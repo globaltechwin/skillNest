@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import {
   teacherProfileSchema,
@@ -20,7 +20,7 @@ export async function uploadProfilePhoto(file: File): Promise<{ success: boolean
     if (!clerkUserId) return { success: false, error: "Not authenticated." };
 
     const user = await prisma.user.findUnique({
-      where: { clerkUserId },
+      where: { id: clerkUserId },
       select: { id: true },
     });
     if (!user) return { success: false, error: "User not found." };
@@ -71,7 +71,7 @@ export async function getTeacherProfile() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
 
@@ -122,7 +122,7 @@ export async function saveTeacherProfile(
     }
 
     const user = await prisma.user.findUnique({
-      where: { clerkUserId },
+      where: { id: clerkUserId },
       select: { id: true, role: true },
     });
 

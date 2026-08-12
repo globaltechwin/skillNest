@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 
 export type StudentClassListItem = {
@@ -22,7 +22,7 @@ export async function getStudentClasses(): Promise<StudentClassListItem[]> {
   if (!clerkUserId) return [];
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return [];

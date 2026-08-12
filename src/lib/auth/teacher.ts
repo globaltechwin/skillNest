@@ -1,6 +1,6 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/custom";
 
 export type TeacherAuthResult = {
   userId: string;
@@ -13,11 +13,11 @@ export type TeacherAuthResult = {
 };
 
 export async function requireApprovedTeacher(): Promise<TeacherAuthResult> {
-  const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  const session = await auth();
+  if (!session) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: session.userId },
     select: { id: true, role: true, clerkUserId: true },
   });
 

@@ -11,7 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cancelClass } from "../actions";
@@ -54,7 +54,7 @@ export default async function ClassDetailPage({
   if (!clerkUserId) notFound();
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "TEACHER") notFound();

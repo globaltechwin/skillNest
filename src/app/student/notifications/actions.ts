@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 
 export async function getNotifications(limit = 10) {
@@ -8,7 +8,7 @@ export async function getNotifications(limit = 10) {
   if (!clerkUserId) return [];
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return [];
@@ -25,7 +25,7 @@ export async function getUnreadNotificationCount(): Promise<number> {
   if (!clerkUserId) return 0;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return 0;
@@ -40,7 +40,7 @@ export async function markNotificationAsRead(notificationId: string) {
   if (!clerkUserId) return { success: false, error: "Unauthorized." };
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return { success: false, error: "Unauthorized." };
@@ -67,7 +67,7 @@ export async function markAllNotificationsAsRead() {
   if (!clerkUserId) return { success: false, error: "Unauthorized." };
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return { success: false, error: "Unauthorized." };

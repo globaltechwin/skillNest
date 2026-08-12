@@ -9,7 +9,7 @@ import {
   User,
   ExternalLink,
 } from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export default async function StudentClassDetailPage({
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") redirect("/login");

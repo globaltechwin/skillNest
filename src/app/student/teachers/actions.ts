@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
@@ -51,7 +51,7 @@ export async function getTeachers(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
   if (!user || user.role !== "STUDENT") {
@@ -198,7 +198,7 @@ export async function getTeacherProfile(teacherId: string) {
   if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
   if (!user || user.role !== "STUDENT") return null;
@@ -311,7 +311,7 @@ export async function getTeacherPhone(teacherId: string): Promise<string | null>
   if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
 

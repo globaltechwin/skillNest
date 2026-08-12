@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { StudentNavbar } from "@/components/StudentNavbar";
@@ -16,7 +16,7 @@ export default async function StudentLayout({
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true, firstName: true },
   });
 

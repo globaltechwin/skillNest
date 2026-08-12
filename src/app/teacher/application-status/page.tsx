@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GraduationCap, Clock, CheckCircle2, XCircle, AlertCircle, FileText } from "lucide-react";
@@ -52,7 +52,7 @@ export default async function ApplicationStatusPage() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
 

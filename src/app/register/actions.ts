@@ -47,11 +47,11 @@ export async function completeSignup(
   lastName: string | null,
   role: "STUDENT" | "TEACHER"
 ) {
-  let newUser = await prisma.user.findUnique({ where: { clerkUserId } });
+  let newUser = await prisma.user.findUnique({ where: { id: clerkUserId } });
 
   if (newUser) {
     newUser = await prisma.user.update({
-      where: { clerkUserId },
+      where: { id: clerkUserId },
       data: { email, firstName, lastName, role },
     });
   } else {

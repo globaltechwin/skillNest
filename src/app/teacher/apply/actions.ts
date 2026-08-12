@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { type DayOfWeek } from "@prisma/client";
 import { teacherApplicationSchema } from "@/lib/validations/teacher";
@@ -39,7 +39,7 @@ export async function submitTeacherApplication(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
 
@@ -171,7 +171,7 @@ export async function getExistingApplication(): Promise<ApplicationData | null> 
   if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "TEACHER") return null;

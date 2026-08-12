@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { getActiveSession } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GraduationCap, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
@@ -8,14 +8,16 @@ import { prisma } from "@/lib/prisma";
 import { becomeTutor } from "./actions";
 
 export default async function BecomeATutorPage() {
-  const { userId: clerkUserId } = await auth();
+  const session = await getActiveSession();
 
-  if (!clerkUserId) {
+  if (!session) {
     redirect("/login");
   }
 
+  const clerkUserId = session.userId;
+
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
 

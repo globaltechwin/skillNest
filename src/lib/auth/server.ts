@@ -1,17 +1,17 @@
-import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getSkillNestUser, getDashboardPath, type UserRole } from "@/lib/auth";
+import { auth } from "@/lib/auth/custom";
 
 /**
- * Get the current authenticated Clerk user.
+ * Get the current authenticated user.
  * Redirects to login if not authenticated.
  */
 export async function requireClerkAuth() {
-  const clerkUser = await currentUser();
-  if (!clerkUser) {
+  const session = await auth();
+  if (!session) {
     redirect("/login");
   }
-  return clerkUser;
+  return session;
 }
 
 /**
@@ -20,15 +20,15 @@ export async function requireClerkAuth() {
  * Redirects to register if no SkillNest profile exists.
  */
 export async function requireAuth() {
-  const clerkUser = await requireClerkAuth();
+  const session = await requireClerkAuth();
 
-  const skillnestUser = await getSkillNestUser(clerkUser.id);
+  const skillnestUser = await getSkillNestUser(session.userId);
 
   if (!skillnestUser) {
     redirect("/register");
   }
 
-  return { clerkUser, skillnestUser };
+  return { clerkUser: session, skillnestUser };
 }
 
 /**

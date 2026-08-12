@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { CourseForm } from "../../CourseForm";
 
 export default async function EditCoursePage({
@@ -14,7 +14,7 @@ export default async function EditCoursePage({
   if (!clerkUserId) notFound();
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "TEACHER") notFound();

@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Clock } from "lucide-react";
@@ -41,7 +41,7 @@ export default async function TeacherSchedulePage() {
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "TEACHER") redirect("/login");

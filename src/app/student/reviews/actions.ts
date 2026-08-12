@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { reviewSchema } from "@/lib/validations/teacher";
@@ -65,7 +65,7 @@ async function requireAdmin(): Promise<string> {
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
   if (!user || user.role !== "ADMIN") redirect("/login");
@@ -192,7 +192,7 @@ export async function createReview(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") {
@@ -266,7 +266,7 @@ export async function updateReview(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") {
@@ -314,7 +314,7 @@ export async function deleteReview(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") {
@@ -350,7 +350,7 @@ export async function getMyReview(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") {

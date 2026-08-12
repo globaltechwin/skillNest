@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { writeFile, mkdir, unlink } from "fs/promises";
@@ -13,7 +13,7 @@ async function requireAdmin() {
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
   if (!user || user.role !== "ADMIN") redirect("/login");
@@ -212,15 +212,6 @@ export async function updateTeacherStatus(
   await prisma.teacherProfile.update({
     where: { id: profile.id },
     data: { status: newStatus, reviewNote: reviewNote || null },
-  });
-
-  const client = await clerkClient();
-  await client.users.updateUserMetadata(user.clerkUserId, {
-    publicMetadata: {
-      role: "teacher",
-      teacherVerified: newStatus === "APPROVED",
-      teacherStatus: newStatus,
-    },
   });
 
   return { success: true };
@@ -559,15 +550,6 @@ export async function suspendTeacher(
     },
   });
 
-  const client = await clerkClient();
-  await client.users.updateUserMetadata(user.clerkUserId, {
-    publicMetadata: {
-      role: "teacher",
-      teacherVerified: false,
-      teacherStatus: "SUSPENDED",
-    },
-  });
-
   return { success: true };
 }
 
@@ -602,15 +584,6 @@ export async function unsuspendTeacher(userId: string): Promise<TeacherActionRes
       targetType: "TeacherProfile",
       targetId: profile.id,
       reason: null,
-    },
-  });
-
-  const client = await clerkClient();
-  await client.users.updateUserMetadata(user.clerkUserId, {
-    publicMetadata: {
-      role: "teacher",
-      teacherVerified: true,
-      teacherStatus: "APPROVED",
     },
   });
 
@@ -1430,7 +1403,7 @@ export async function uploadTeacherPhoto(
   const clerkUserId = await requireAdmin();
 
   const adminUser = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true },
   });
   if (!adminUser) {

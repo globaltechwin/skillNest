@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Globe, BookOpen, User, FileText } from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 
@@ -31,7 +31,7 @@ export default async function StudentCourseDetailPage({
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") redirect("/login");

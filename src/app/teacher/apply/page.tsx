@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { GraduationCap, User, BookOpen, Award, Clock, Check, ArrowRight, ArrowLeft, Plus, Trash2, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ const DAY_LABELS: Record<string, string> = {
 
 export default function TeacherApplyPage() {
   const router = useRouter();
-  const { user } = useUser();
+  const [currentUser, setCurrentUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -45,9 +44,9 @@ export default function TeacherApplyPage() {
   const [subjects, setSubjects] = useState<{ id: string; name: string }[]>([]);
 
   const [formData, setFormData] = useState<ApplicationData>({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    email: user?.emailAddresses?.[0]?.emailAddress || "",
+    firstName: "",
+    lastName: "",
+    email: "",
     phone: "",
     gender: "",
     location: "",
@@ -62,20 +61,42 @@ export default function TeacherApplyPage() {
   });
 
   useEffect(() => {
+    // Fetch current session
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.active) {
+          setCurrentUser({
+            firstName: data.active.firstName || "",
+            lastName: data.active.lastName || "",
+            email: data.active.email || "",
+          });
+        }
+      });
+
     getSubjects().then(setSubjects);
     getExistingApplication().then((existing) => {
       if (existing) {
         setFormData((prev) => ({
           ...prev,
           ...existing,
-          firstName: existing.firstName || user?.firstName || "",
-          lastName: existing.lastName || user?.lastName || "",
-          email: existing.email || user?.emailAddresses?.[0]?.emailAddress || "",
         }));
       }
       setLoadingExisting(false);
     });
-  }, [user]);
+  }, []);
+
+  // Update form when user data loads
+  useEffect(() => {
+    if (currentUser) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: prev.firstName || currentUser.firstName,
+        lastName: prev.lastName || currentUser.lastName,
+        email: prev.email || currentUser.email,
+      }));
+    }
+  }, [currentUser]);
 
   if (loadingExisting) {
     return (

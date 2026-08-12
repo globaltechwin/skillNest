@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { messageSchema } from "@/lib/validations/teacher";
 
@@ -19,7 +19,7 @@ export async function startConversation(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") {
@@ -67,7 +67,7 @@ export async function getStudentConversations() {
   if (!clerkUserId) return [];
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return [];
@@ -112,7 +112,7 @@ export async function getStudentConversation(conversationId: string) {
   if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return null;
@@ -141,7 +141,7 @@ export async function getStudentMessages(conversationId: string) {
   if (!clerkUserId) return [];
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "STUDENT") return [];
@@ -181,7 +181,7 @@ export async function sendMessage(
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true, firstName: true, lastName: true },
   });
   if (!user) {
@@ -260,7 +260,7 @@ export async function markConversationAsRead(conversationId: string) {
   if (!clerkUserId) return;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user) return;
@@ -290,7 +290,7 @@ export async function getUnreadCount(): Promise<number> {
   if (!clerkUserId) return 0;
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true },
   });
   if (!user) return 0;

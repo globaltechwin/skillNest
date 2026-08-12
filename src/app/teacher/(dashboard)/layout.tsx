@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import {
   DashboardSidebar,
   type NavItem,
@@ -25,7 +25,7 @@ export default async function TeacherDashboardLayout({
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, role: true, firstName: true },
   });
   if (!user) redirect("/register");

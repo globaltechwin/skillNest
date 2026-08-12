@@ -1,136 +1,210 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { GraduationCap, BookOpen, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { currentUser } from "@clerk/nextjs/server";
-import { getSkillNestUser, getDashboardPath } from "@/lib/auth";
-import { selectRole } from "./actions";
+"use client";
 
-export default async function RegisterPage() {
-  // If already signed in, redirect to dashboard
-  const clerkUser = await currentUser();
-  if (clerkUser) {
-    const user = await getSkillNestUser(clerkUser.id);
-    if (user) {
-      redirect(getDashboardPath(user.role));
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { GraduationCap, Eye, EyeOff, User, BookOpen } from "lucide-react";
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [step, setStep] = useState<"role" | "form">("role");
+  const [role, setRole] = useState<"STUDENT" | "TEACHER">("STUDENT");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRoleSelect = (selected: "STUDENT" | "TEACHER") => {
+    setRole(selected);
+    setStep("form");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, firstName, lastName, role }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Registration failed.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = data.redirect;
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Section - Branding */}
-      <div className="hidden lg:flex lg:w-[48%] xl:w-[52%] relative overflow-hidden bg-primary">
-        <div className="absolute inset-0 opacity-[0.07]">
-          <svg
-            className="absolute top-0 left-0 h-full w-full"
-            viewBox="0 0 800 600"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <circle cx="650" cy="80" r="180" fill="currentColor" className="text-white" />
-            <circle cx="100" cy="500" r="220" fill="currentColor" className="text-white" />
-            <circle cx="500" cy="350" r="160" fill="currentColor" className="text-white" />
-          </svg>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md">
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10">
+            <GraduationCap className="size-6 text-primary" strokeWidth={1.8} />
+          </div>
+          <span className="text-2xl font-bold tracking-tight text-foreground">SkillNest</span>
         </div>
 
-        <div className="relative z-10 flex flex-col justify-between w-full px-10 xl:px-16 py-12">
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-              <GraduationCap className="size-6 text-white" strokeWidth={1.8} />
+        {step === "role" ? (
+          <>
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h1>
+              <p className="text-sm text-muted-foreground mt-1">How do you want to use SkillNest?</p>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">
-              SkillNest
-            </span>
-          </div>
 
-          <div className="flex-1 flex flex-col justify-center max-w-lg">
-            <h1 className="text-4xl xl:text-5xl font-bold leading-tight text-white tracking-tight">
-              Start your journey.{" "}
-              <span className="text-white/80">Unlock your potential.</span>
-            </h1>
-            <p className="mt-6 text-lg text-white/70 leading-relaxed">
-              Create your account and get access to expert tutors, personalized
-              learning plans, and a community that supports your growth.
-            </p>
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleRoleSelect("STUDENT")}
+                className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+              >
+                <div className="flex size-12 items-center justify-center rounded-full bg-blue-100">
+                  <User className="size-6 text-blue-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-foreground">Student</p>
+                  <p className="text-xs text-muted-foreground mt-1">Find courses & teachers</p>
+                </div>
+              </button>
 
-          <p className="text-sm text-white/40">
-            &copy; {new Date().getFullYear()} SkillNest. All rights reserved.
-          </p>
-        </div>
-      </div>
-
-      {/* Right Section - Role Selection */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 sm:px-10 lg:px-12 xl:px-16">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-              <GraduationCap className="size-5 text-primary" strokeWidth={1.8} />
+              <button
+                onClick={() => handleRoleSelect("TEACHER")}
+                className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+              >
+                <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100">
+                  <BookOpen className="size-6 text-emerald-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-foreground">Teacher</p>
+                  <p className="text-xs text-muted-foreground mt-1">Share your expertise</p>
+                </div>
+              </button>
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              SkillNest
-            </span>
-          </div>
+          </>
+        ) : (
+          <>
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                {role === "TEACHER" ? "Teacher" : "Student"} Registration
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">Fill in your details to get started</p>
+            </div>
 
-          <div className="space-y-2 mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Create your account
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              How would you like to use SkillNest?
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <form action={selectRole.bind(null, "STUDENT")}>
-              <Card className="p-6 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors flex-shrink-0">
-                    <BookOpen className="size-6 text-primary" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground">Student</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Find tutors and learn
-                    </p>
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                  {error}
                 </div>
-                <Button type="submit" className="w-full mt-4" size="lg">
-                  Select
-                </Button>
-              </Card>
-            </form>
+              )}
 
-            <form action={selectRole.bind(null, "TEACHER")}>
-              <Card className="p-6 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
-                <div className="flex items-start gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-orange-100 group-hover:bg-orange-200/60 transition-colors flex-shrink-0">
-                    <Users className="size-6 text-orange-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground">Teacher</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Teach students and earn
-                    </p>
-                  </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-1.5">
+                    First name *
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="John"
+                  />
                 </div>
-                <Button type="submit" variant="outline" className="w-full mt-4" size="lg">
-                  Select
-                </Button>
-              </Card>
-            </form>
-          </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-1.5">
+                    Last name
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 pr-10 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="At least 6 characters"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                {loading ? "Creating account..." : "Create Account"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep("role")}
+                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                ← Back to role selection
+              </button>
+            </form>
+          </>
+        )}
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-primary hover:underline">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

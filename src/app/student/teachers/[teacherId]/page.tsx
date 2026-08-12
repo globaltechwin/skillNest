@@ -9,7 +9,7 @@ import {
   GraduationCap,
   Layers,
 } from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { ContactTeacherButton } from "./ContactTeacherButton";
@@ -41,7 +41,7 @@ export default async function TeacherProfilePage({
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { role: true },
   });
   if (!user || user.role !== "STUDENT") redirect("/login");

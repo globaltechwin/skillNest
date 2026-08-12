@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { GraduationCap, Menu, X, LogOut, Bell, User } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useClerk } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navLinks = [
@@ -22,8 +20,12 @@ type Props = {
 export function StudentNavbar({ firstName }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { signOut } = useClerk();
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  };
 
   const isActive = (href: string) => {
     if (href === "/student") return pathname === "/student";
@@ -80,7 +82,7 @@ export function StudentNavbar({ firstName }: Props) {
               {firstName || "User"}
             </Link>
             <button
-              onClick={() => signOut(() => router.push("/login"))}
+              onClick={handleSignOut}
               className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               <LogOut className="size-4" />
@@ -178,7 +180,7 @@ export function StudentNavbar({ firstName }: Props) {
             </nav>
             <div className="px-3 py-4 border-t border-gray-100">
               <button
-                onClick={() => signOut(() => router.push("/login"))}
+                onClick={handleSignOut}
                 className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
               >
                 <LogOut className="size-4" />

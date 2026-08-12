@@ -24,7 +24,7 @@ export async function getSkillNestUser(
   clerkUserId: string
 ): Promise<SkillNestUser | null> {
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
   });
 
   if (!user) return null;

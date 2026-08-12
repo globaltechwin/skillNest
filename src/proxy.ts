@@ -1,74 +1,126 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/login(.*)",
-  "/register(.*)",
-  "/teachers(.*)",
-  "/api(.*)",
-]);
+type SessionPayload = {
+  userId: string;
+  email: string;
+  role: "STUDENT" | "TEACHER" | "ADMIN";
+  firstName: string | null;
+  lastName: string | null;
+};
 
-const isStudentRoute = createRouteMatcher(["/student(.*)"]);
-const isTeacherRoute = createRouteMatcher(["/teacher(.*)"]);
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+function decodeSession(token: string): SessionPayload | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
 
-export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+    let bodyStr = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    while (bodyStr.length % 4) bodyStr += "=";
+    const payload = JSON.parse(atob(bodyStr));
 
-  const response = NextResponse.next();
-  response.headers.set("x-url", req.nextUrl.pathname);
+    if (Date.now() - payload.iat > 7 * 24 * 60 * 60 * 1000) return null;
 
-  // Allow public routes through
-  if (isPublicRoute(req)) {
-    return response;
+    return {
+      userId: payload.userId,
+      email: payload.email,
+      role: payload.role,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function getSessionForPath(req: NextRequest, pathname: string): SessionPayload | null {
+  let cookieRole: string | null = null;
+  if (pathname.startsWith("/student")) cookieRole = "student";
+  else if (pathname.startsWith("/teacher")) cookieRole = "teacher";
+  else if (pathname.startsWith("/admin")) cookieRole = "admin";
+
+  if (cookieRole) {
+    const token = req.cookies.get(`sn_session_${cookieRole}`)?.value;
+    if (token) return decodeSession(token);
+    return null;
   }
 
-  // If not authenticated and trying to access protected route, redirect to login
-  if (!userId) {
-    const signInUrl = new URL("/login", req.url);
-    return NextResponse.redirect(signInUrl);
+  const activeRole = req.cookies.get("sn_active_role")?.value;
+  if (!activeRole) return null;
+
+  const token = req.cookies.get(`sn_session_${activeRole}`)?.value;
+  if (!token) return null;
+
+  return decodeSession(token);
+}
+
+function getSessionFromActiveRole(req: NextRequest): SessionPayload | null {
+  const activeRole = req.cookies.get("sn_active_role")?.value;
+  if (!activeRole) return null;
+
+  const token = req.cookies.get(`sn_session_${activeRole}`)?.value;
+  if (!token) return null;
+
+  return decodeSession(token);
+}
+
+export async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  const PUBLIC_PATHS = ["/", "/login", "/register", "/become-a-tutor", "/api/auth"];
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+  if (isPublic) {
+    if (pathname === "/login" || pathname === "/register") {
+      const session = getSessionFromActiveRole(req);
+      const hasRedirectParam = req.nextUrl.searchParams.has("redirect");
+      if (session && !hasRedirectParam) {
+        const dashPath =
+          session.role === "ADMIN" ? "/admin" : session.role === "TEACHER" ? "/teacher" : "/student";
+        return NextResponse.redirect(new URL(dashPath, req.url));
+      }
+    }
+    return NextResponse.next();
   }
 
-  // Look up the user's role in the database
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    select: { role: true },
-  });
-
-  // If no user record exists, redirect to register to create one
-  if (!user) {
-    return NextResponse.redirect(new URL("/register", req.url));
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
   }
 
-  const role = user.role;
+  const session = getSessionForPath(req, pathname);
 
-  // Role-based route protection
-  if (isStudentRoute(req) && role !== "STUDENT") {
-    const redirectUrl =
-      role === "TEACHER" ? "/teacher" : role === "ADMIN" ? "/admin" : "/login";
-    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  if (!session) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  if (isTeacherRoute(req) && role !== "TEACHER") {
-    const redirectUrl =
-      role === "STUDENT" ? "/student" : role === "ADMIN" ? "/admin" : "/login";
-    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  const isStudent = pathname.startsWith("/student");
+  const isTeacher = pathname.startsWith("/teacher");
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isStudent && session.role !== "STUDENT") {
+    const dashPath = session.role === "TEACHER" ? "/teacher" : "/admin";
+    return NextResponse.redirect(new URL(dashPath, req.url));
   }
 
-  if (isAdminRoute(req) && role !== "ADMIN") {
-    const redirectUrl =
-      role === "STUDENT" ? "/student" : role === "TEACHER" ? "/teacher" : "/login";
-    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  if (isTeacher && session.role !== "TEACHER") {
+    const dashPath = session.role === "STUDENT" ? "/student" : "/admin";
+    return NextResponse.redirect(new URL(dashPath, req.url));
   }
 
-  return response;
-});
+  if (isAdmin && session.role !== "ADMIN") {
+    const dashPath = session.role === "STUDENT" ? "/student" : "/teacher";
+    return NextResponse.redirect(new URL(dashPath, req.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
   ],
 };

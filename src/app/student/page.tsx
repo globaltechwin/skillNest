@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -49,7 +49,7 @@ export default async function StudentOverviewPage() {
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: clerkUserId },
     select: { id: true, firstName: true, role: true },
   });
   if (!user || user.role !== "STUDENT") redirect("/login");

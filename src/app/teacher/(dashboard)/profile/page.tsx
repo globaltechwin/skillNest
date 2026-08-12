@@ -1,28 +1,23 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { TeacherProfileForm } from "./TeacherProfileForm";
 
 export default async function TeacherProfilePage() {
-  const { userId: clerkUserId } = await auth();
+  const session = await auth();
 
-  if (!clerkUserId) {
+  if (!session) {
     redirect("/login");
   }
 
   const user = await prisma.user.findUnique({
-    where: { clerkUserId },
+    where: { id: session.userId },
     select: { id: true, firstName: true, lastName: true, role: true },
   });
 
   if (!user || user.role !== "TEACHER") {
     redirect("/login");
   }
-
-  // Get Clerk user profile image
-  const client = await clerkClient();
-  const clerkUser = await client.users.getUser(clerkUserId);
-  const profileImageUrl = clerkUser.imageUrl || null;
 
   const subjects = await prisma.subject.findMany({
     orderBy: { name: "asc" },
@@ -39,6 +34,8 @@ export default async function TeacherProfilePage() {
       qualifications: true,
     },
   });
+
+  const profileImageUrl = existingProfile?.profilePhotoUrl || null;
 
   const initialData = existingProfile
     ? {
