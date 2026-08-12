@@ -86,7 +86,7 @@ model TeacherProfile {
   phone             String?
   gender            String?
   location          String?
-  profilePhotoUrl   String?
+  profilePhotoUrl   String?                @db.MediumText
   teachingMode      TeachingMode           @default(BOTH)
   yearsOfExperience Int                    @default(0)
   hourlyRate        Float                  @default(0)

@@ -3,8 +3,7 @@
 import { auth } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
+
 
 const PAGE_SIZE = 20;
 
@@ -1443,24 +1442,18 @@ export async function uploadTeacherPhoto(
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const ext = file.name.split(".").pop() || "jpg";
-  const filename = `teacher-${profile.id}-${Date.now()}.${ext}`;
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-
-  await mkdir(uploadsDir, { recursive: true });
-  await writeFile(path.join(uploadsDir, filename), buffer);
-
-  const photoUrl = `/uploads/${filename}`;
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const mimeMap: Record<string, string> = {
+    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif",
+  };
+  const mime = mimeMap[ext] || "image/jpeg";
+  const base64 = buffer.toString("base64");
+  const photoUrl = `data:${mime};base64,${base64}`;
 
   await prisma.teacherProfile.update({
     where: { id: profile.id },
     data: { profilePhotoUrl: photoUrl },
   });
-
-  if (profile.profilePhotoUrl && profile.profilePhotoUrl.startsWith("/uploads/")) {
-    const oldPath = path.join(process.cwd(), "public", profile.profilePhotoUrl);
-    await unlink(oldPath).catch(() => {});
-  }
 
   await prisma.adminAuditLog.create({
     data: {
