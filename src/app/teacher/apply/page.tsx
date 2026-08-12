@@ -36,7 +36,6 @@ const DAY_LABELS: Record<string, string> = {
 
 export default function TeacherApplyPage() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -61,16 +60,17 @@ export default function TeacherApplyPage() {
   });
 
   useEffect(() => {
-    // Fetch current session
+    // Fetch current session and prefill the form
     fetch("/api/auth/session")
       .then((res) => res.json())
       .then((data) => {
         if (data.active) {
-          setCurrentUser({
-            firstName: data.active.firstName || "",
-            lastName: data.active.lastName || "",
-            email: data.active.email || "",
-          });
+          setFormData((prev) => ({
+            ...prev,
+            firstName: prev.firstName || data.active.firstName || "",
+            lastName: prev.lastName || data.active.lastName || "",
+            email: prev.email || data.active.email || "",
+          }));
         }
       });
 
@@ -85,18 +85,6 @@ export default function TeacherApplyPage() {
       setLoadingExisting(false);
     });
   }, []);
-
-  // Update form when user data loads
-  useEffect(() => {
-    if (currentUser) {
-      setFormData((prev) => ({
-        ...prev,
-        firstName: prev.firstName || currentUser.firstName,
-        lastName: prev.lastName || currentUser.lastName,
-        email: prev.email || currentUser.email,
-      }));
-    }
-  }, [currentUser]);
 
   if (loadingExisting) {
     return (
