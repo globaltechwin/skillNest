@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/custom";
+import { authForRole } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { StudentNavbar } from "@/components/StudentNavbar";
@@ -9,7 +9,7 @@ export default async function StudentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId: clerkUserId } = await auth();
+  const { userId: clerkUserId } = await authForRole("STUDENT");
 
   if (!clerkUserId) {
     redirect("/login");

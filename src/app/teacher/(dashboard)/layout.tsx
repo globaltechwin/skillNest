@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth/custom";
+import { authForRole } from "@/lib/auth/custom";
 import {
   DashboardSidebar,
   type NavItem,
@@ -21,7 +21,7 @@ export default async function TeacherDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId: clerkUserId } = await auth();
+  const { userId: clerkUserId } = await authForRole("TEACHER");
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({

@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/custom";
+import { authForRole } from "@/lib/auth/custom";
 import { redirect } from "next/navigation";
 import {
   DashboardSidebar,
@@ -20,7 +20,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId: clerkUserId } = await auth();
+  const { userId: clerkUserId } = await authForRole("ADMIN");
   if (!clerkUserId) redirect("/login");
 
   const user = await prisma.user.findUnique({

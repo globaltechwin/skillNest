@@ -197,6 +197,21 @@ export async function auth(): Promise<SessionPayload> {
   return session;
 }
 
+export async function authForRole(role: "STUDENT" | "TEACHER" | "ADMIN"): Promise<SessionPayload> {
+  const store = await cookies();
+  const token = store.get(sessionCookieName(role.toLowerCase()))?.value;
+  if (token) {
+    const session = await verifyJwt(token);
+    if (session) return session;
+  }
+  // Fallback to active session
+  const session = await getActiveSession();
+  if (!session) {
+    throw new Error("NOT_AUTHENTICATED");
+  }
+  return session;
+}
+
 export async function requireAuth(): Promise<SessionPayload> {
   const session = await getActiveSession();
   if (!session) {
