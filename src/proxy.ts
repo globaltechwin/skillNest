@@ -43,13 +43,7 @@ function getSessionForPath(req: NextRequest, pathname: string): SessionPayload |
     return null;
   }
 
-  const activeRole = req.cookies.get("sn_active_role")?.value;
-  if (!activeRole) return null;
-
-  const token = req.cookies.get(`sn_session_${activeRole}`)?.value;
-  if (!token) return null;
-
-  return decodeSession(token);
+  return null;
 }
 
 function getSessionFromActiveRole(req: NextRequest): SessionPayload | null {

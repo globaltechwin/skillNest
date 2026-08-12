@@ -115,12 +115,24 @@ export async function createSession(payload: SessionPayload): Promise<void> {
 export async function getActiveSession(): Promise<SessionPayload | null> {
   const store = await cookies();
   const activeRole = store.get(ACTIVE_SESSION_KEY)?.value;
-  if (!activeRole) return null;
+  if (activeRole) {
+    const token = store.get(sessionCookieName(activeRole))?.value;
+    if (token) {
+      const session = await verifyJwt(token);
+      if (session) return session;
+    }
+  }
 
-  const token = store.get(sessionCookieName(activeRole))?.value;
-  if (!token) return null;
+  // Fallback: check all role cookies and return the first valid one
+  for (const role of ["student", "teacher", "admin"]) {
+    const token = store.get(sessionCookieName(role))?.value;
+    if (token) {
+      const session = await verifyJwt(token);
+      if (session) return session;
+    }
+  }
 
-  return await verifyJwt(token);
+  return null;
 }
 
 export async function getSessionsByRole(): Promise<Record<string, SessionPayload | null>> {
