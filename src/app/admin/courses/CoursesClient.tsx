@@ -53,7 +53,7 @@ export function CoursesClient({
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              placeholder="Search courses by title or teacher..."
+              placeholder="Search courses by title or tutor..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"

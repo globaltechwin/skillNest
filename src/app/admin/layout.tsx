@@ -13,7 +13,9 @@ const navItems: NavItem[] = [
   { label: "Tutors", href: "/admin/teachers", icon: "Users" },
   { label: "Students", href: "/admin/students", icon: "User" },
   { label: "Courses", href: "/admin/courses", icon: "BookOpen" },
+  { label: "Payments", href: "/admin/payments", icon: "CreditCard" },
   { label: "Reviews", href: "/admin/reviews", icon: "Star" },
+  { label: "Notifications", href: "/admin/notifications", icon: "Bell" },
 ];
 
 export default async function AdminLayout({
@@ -26,23 +28,37 @@ export default async function AdminLayout({
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { role: true, firstName: true },
+    select: { id: true, role: true, firstName: true },
   });
 
   if (!user || user.role !== "ADMIN") {
     redirect(user?.role === "TEACHER" ? "/teacher" : "/student");
   }
 
+  let notificationCount = 0;
+  try {
+    notificationCount = await prisma.notification.count({
+      where: { userId: user.id, readAt: null },
+    });
+  } catch {}
+
+  const navItemsWithBadge = navItems.map((item) => {
+    if (item.href === "/admin/notifications") {
+      return { ...item, badge: notificationCount > 0 ? notificationCount : undefined };
+    }
+    return item;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardSidebar
-        navItems={navItems}
+        navItems={navItemsWithBadge}
         firstName={user.firstName}
         roleLabel="Admin"
         roleColor="text-primary"
       />
       <MobileNav
-        navItems={navItems}
+        navItems={navItemsWithBadge}
         firstName={user.firstName}
         roleLabel="Admin"
       />

@@ -15,6 +15,8 @@ import {
   Bell,
   Home,
   LogOut,
+  CreditCard,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/SignOutButton";
@@ -30,6 +32,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   MessageSquare,
   Bell,
   Home,
+  CreditCard,
+  Star,
 };
 
 export type NavItem = {

@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { SignOutButton } from "@/components/SignOutButton";
+import { StudentProfileForm } from "./StudentProfileForm";
 
 export default async function StudentProfilePage() {
   const { userId: clerkUserId } = await auth();
@@ -34,36 +35,28 @@ export default async function StudentProfilePage() {
           Profile
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Your account information
+          Manage your account information
         </p>
       </div>
 
       <Card className="p-6">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-xl font-bold text-primary">
-              {(user.firstName || "S").charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                {user.firstName} {user.lastName || ""}
-              </h3>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-            </div>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-xl font-bold text-primary">
+            {(user.firstName || "S").charAt(0).toUpperCase()}
           </div>
-          <div className="border-t border-border pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium text-foreground">Role</p>
-              <p className="text-sm text-muted-foreground mt-0.5">Student</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">Email</p>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {user.email}
-              </p>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">
+              {user.firstName} {user.lastName || ""}
+            </h3>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
           </div>
         </div>
+
+        <StudentProfileForm
+          firstName={user.firstName || ""}
+          lastName={user.lastName || ""}
+          email={user.email}
+        />
       </Card>
 
       <Card className="p-6">

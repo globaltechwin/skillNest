@@ -263,7 +263,7 @@ export default function ReviewSection({ teacherProfileId, isStudent }: Props) {
               />
               {formRating === 0 && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Click a star to rate this teacher.
+                  Click a star to rate this tutor.
                 </p>
               )}
             </div>
@@ -280,7 +280,7 @@ export default function ReviewSection({ teacherProfileId, isStudent }: Props) {
                     setFormComment(e.target.value);
                   }
                 }}
-                placeholder="Share your experience with this teacher..."
+                placeholder="Share your experience with this tutor..."
                 rows={4}
                 maxLength={1000}
               />

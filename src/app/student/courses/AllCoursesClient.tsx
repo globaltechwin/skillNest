@@ -45,7 +45,7 @@ export function AllCoursesClient() {
           <BookOpen className="size-8 text-blue-600" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">No courses available</h3>
-        <p className="text-sm text-gray-500">Courses added by teachers will appear here.</p>
+        <p className="text-sm text-gray-500">Courses added by tutors will appear here.</p>
       </div>
     );
   }

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth/custom";
 import { CourseForm } from "../../CourseForm";
+import { LessonManager } from "../../lessons/LessonManager";
+import { Card } from "@/components/ui/card";
 
 export default async function EditCoursePage({
   params,
@@ -36,21 +38,32 @@ export default async function EditCoursePage({
     select: { id: true, name: true },
   });
 
+  const lessons = await prisma.courseLesson.findMany({
+    where: { courseId },
+    orderBy: { order: "asc" },
+  });
+
   return (
-    <CourseForm
-      subjects={subjects}
-      course={{
-        id: course.id,
-        title: course.title,
-        description: course.description || "",
-        subjectId: course.subjectId,
-        teachingLevel: course.teachingLevel || "",
-        teachingMode: course.teachingMode || "",
-        location: course.location || "",
-        maxStudents: course.maxStudents,
-        status: course.status,
-      }}
-      mode="edit"
-    />
+    <div className="space-y-6">
+      <CourseForm
+        subjects={subjects}
+        course={{
+          id: course.id,
+          title: course.title,
+          description: course.description || "",
+          subjectId: course.subjectId,
+          teachingLevel: course.teachingLevel || "",
+          teachingMode: course.teachingMode || "",
+          location: course.location || "",
+          maxStudents: course.maxStudents,
+          status: course.status,
+        }}
+        mode="edit"
+      />
+
+      <Card className="p-6">
+        <LessonManager courseId={courseId} initialLessons={lessons} />
+      </Card>
+    </div>
   );
 }

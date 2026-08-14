@@ -216,7 +216,7 @@ export async function createReview(
   if (!enrollment) {
     return {
       success: false,
-      error: "You can only review teachers whose courses you have completed.",
+      error: "You can only review tutors whose courses you have completed.",
     };
   }
 
@@ -237,7 +237,7 @@ export async function createReview(
     },
   });
   if (existing) {
-    return { success: false, error: "You have already reviewed this teacher." };
+    return { success: false, error: "You have already reviewed this tutor." };
   }
 
   const review = await prisma.review.create({

@@ -1,9 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Globe, BookOpen, User, FileText } from "lucide-react";
+import { ArrowLeft, MapPin, Globe, BookOpen, User, FileText, Play } from "lucide-react";
 import { auth } from "@/lib/auth/custom";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
+import { PaymentButton } from "@/components/PaymentButton";
 
 const MODE_LABELS: Record<string, string> = {
   ONLINE: "Online",
@@ -43,7 +44,7 @@ export default async function StudentCourseDetailPage({
         studentUserId: user.id,
       },
     },
-    select: { status: true },
+    select: { id: true, status: true },
   });
 
   if (!enrollment || enrollment.status !== "ACCEPTED") notFound();
@@ -69,6 +70,16 @@ export default async function StudentCourseDetailPage({
           status: true,
         },
         orderBy: { createdAt: "desc" },
+      },
+      lessons: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          duration: true,
+          order: true,
+        },
       },
     },
   });
@@ -122,10 +133,11 @@ export default async function StudentCourseDetailPage({
             </div>
           </div>
 
-          <div className="shrink-0">
+          <div className="shrink-0 flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium dark:bg-emerald-900/30 dark:text-emerald-400">
               Enrolled
             </span>
+            <PaymentButton enrollmentId={enrollment.id} courseTitle={course.title} />
           </div>
         </div>
 
@@ -138,6 +150,38 @@ export default async function StudentCourseDetailPage({
           </div>
         )}
       </Card>
+
+      {course.lessons.length > 0 && (
+        <Card className="p-6">
+          <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Play className="size-4 text-primary" />
+            Lessons ({course.lessons.length})
+          </h2>
+          <div className="space-y-2">
+            {course.lessons.map((lesson, index) => (
+              <div
+                key={lesson.id}
+                className="flex items-center gap-3 p-3 rounded-lg border border-border/60 bg-background/50"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary shrink-0">
+                  {index + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground text-sm">{lesson.title}</p>
+                  {lesson.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      {lesson.description}
+                    </p>
+                  )}
+                </div>
+                {lesson.duration && (
+                  <span className="text-xs text-muted-foreground shrink-0">{lesson.duration}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Card className="p-6">
         <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, LogOut, Bell, User, Home } from "lucide-react";
+import { Menu, X, LogOut, Bell, User, Home, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Overview", href: "/student" },
   { label: "Courses", href: "/student/courses" },
   { label: "Tutors", href: "/student/teachers" },
+  { label: "Payments", href: "/student/payments", icon: CreditCard },
 ];
 
 type Props = {

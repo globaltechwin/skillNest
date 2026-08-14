@@ -15,6 +15,8 @@ import {
   MessageSquare,
   Bell,
   LogOut,
+  CreditCard,
+  Star,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -31,6 +33,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Clock,
   MessageSquare,
   Bell,
+  CreditCard,
+  Star,
 };
 
 type Props = {
