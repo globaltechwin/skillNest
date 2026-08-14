@@ -147,7 +147,7 @@ export default async function StudentCourseDetailPage({
 
         {course.assignments.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No assignments yet. Your teacher will add assignments soon.
+            No assignments yet. Your tutor will add assignments soon.
           </p>
         ) : (
           <div className="space-y-3">

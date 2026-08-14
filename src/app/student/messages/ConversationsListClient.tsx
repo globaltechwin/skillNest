@@ -82,7 +82,7 @@ export function ConversationsListClient({
       {conversations.map((conv) => {
         const name =
           `${conv.teacherProfile.user.firstName || ""} ${conv.teacherProfile.user.lastName || ""}`.trim() ||
-          "Unknown Teacher";
+          "Unknown Tutor";
         const initials =
           (conv.teacherProfile.user.firstName?.[0] || "") +
           (conv.teacherProfile.user.lastName?.[0] || "");

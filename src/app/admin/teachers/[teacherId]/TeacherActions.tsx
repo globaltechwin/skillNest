@@ -95,9 +95,9 @@ export function TeacherActions({ teacherId, status }: Props) {
             onClick={() => !isPending && setShowSuspendModal(false)}
           />
           <div className="relative bg-card rounded-xl shadow-xl w-full max-w-md mx-4 p-6 space-y-4 ring-1 ring-border">
-            <h3 className="text-lg font-semibold text-foreground">Suspend Teacher</h3>
+            <h3 className="text-lg font-semibold text-foreground">Suspend Tutor</h3>
             <p className="text-sm text-muted-foreground">
-              Provide a reason for suspending this teacher. This will be logged in the audit trail.
+              Provide a reason for suspending this tutor. This will be logged in the audit trail.
             </p>
             <textarea
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px] placeholder:text-muted-foreground"
@@ -120,7 +120,7 @@ export function TeacherActions({ teacherId, status }: Props) {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
                 <Ban className="size-4" />
-                {isPending ? "Suspending..." : "Suspend Teacher"}
+                {isPending ? "Suspending..." : "Suspend Tutor"}
               </button>
             </div>
           </div>

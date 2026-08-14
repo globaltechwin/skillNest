@@ -31,36 +31,32 @@ export async function getTeacherCourses(): Promise<CourseListItem[]> {
 
   const courses = await prisma.course.findMany({
     where: { teacherProfileId: profile.id },
-    include: { subject: { select: { name: true } } },
+    include: {
+      subject: { select: { name: true } },
+      _count: {
+        select: {
+          assignments: true,
+          enrollments: { where: { status: "ACCEPTED" } },
+        },
+      },
+    },
     orderBy: { updatedAt: "desc" },
   });
 
-  const coursesWithCount = await Promise.all(
-    courses.map(async (c) => {
-      const [assignmentCount, studentCount] = await Promise.all([
-        prisma.assignment.count({ where: { courseId: c.id } }),
-        prisma.courseEnrollment.count({
-          where: { courseId: c.id, status: "ACCEPTED" },
-        }),
-      ]);
-      return {
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        teachingLevel: c.teachingLevel,
-        teachingMode: c.teachingMode,
-        location: c.location,
-        maxStudents: c.maxStudents,
-        status: c.status,
-        createdAt: c.createdAt,
-        updatedAt: c.updatedAt,
-        subject: c.subject,
-        _count: { assignments: assignmentCount, students: studentCount },
-      };
-    })
-  );
-
-  return coursesWithCount;
+  return courses.map((c) => ({
+    id: c.id,
+    title: c.title,
+    description: c.description,
+    teachingLevel: c.teachingLevel,
+    teachingMode: c.teachingMode,
+    location: c.location,
+    maxStudents: c.maxStudents,
+    status: c.status,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+    subject: c.subject,
+    _count: { assignments: c._count.assignments, students: c._count.enrollments },
+  }));
 }
 
 export async function getCourseForEdit(courseId: string) {

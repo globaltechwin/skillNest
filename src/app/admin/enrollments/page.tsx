@@ -55,7 +55,7 @@ export default async function AdminEnrollmentsPage({
                   Course Title
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                  Teacher Name
+                  Tutor Name
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   Status

@@ -204,7 +204,7 @@ export default async function AdminClassDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="size-4 text-muted-foreground" />
-                Teacher
+                Tutor
               </CardTitle>
             </CardHeader>
             <CardContent>

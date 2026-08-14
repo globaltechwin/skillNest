@@ -88,7 +88,7 @@ export default async function AdminCourseDetailPage({
       <Card className="p-6">
         <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
           <BookOpen className="size-4 text-muted-foreground" />
-          Teacher
+          Tutor
         </h3>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -333,7 +333,7 @@ export default async function AdminCourseDetailPage({
                 Archive Course
               </h3>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Archiving will hide this course from students and teachers.
+                Archiving will hide this course from students and tutors.
               </p>
             </div>
             <form

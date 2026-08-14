@@ -13,12 +13,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { getDashboardCounts, getPlatformStats, getRecentActivity, getTeachers } from "./actions";
+import { getDashboardCounts, getRecentActivity, getTeachers } from "./actions";
 
 export default async function AdminDashboardPage() {
-  const [counts, stats, recentActivity, pendingResult] = await Promise.all([
+  const [counts, recentActivity, pendingResult] = await Promise.all([
     getDashboardCounts(),
-    getPlatformStats(),
     getRecentActivity(),
     getTeachers(undefined, "PENDING_VERIFICATION", 1),
   ]);
@@ -63,7 +62,7 @@ export default async function AdminDashboardPage() {
           subtitle="Registered"
         />
         <SummaryCard
-          label="Total Teachers"
+          label="Total Tutors"
           value={counts.totalTeachers}
           icon={Users}
           color="text-primary"
@@ -72,14 +71,14 @@ export default async function AdminDashboardPage() {
         />
         <SummaryCard
           label="Total Courses"
-          value={stats.totalCourses}
+          value={counts.totalCourses}
           icon={BookOpen}
           color="text-violet-600"
           bg="bg-violet-100"
-          subtitle={`${stats.publishedCourses} published`}
+          subtitle={`${counts.publishedCourses} published`}
         />
         <SummaryCard
-          label="Pending Teachers"
+          label="Pending Tutors"
           value={counts.pendingTeachers}
           icon={Clock}
           color="text-orange-600"
@@ -150,8 +149,8 @@ export default async function AdminDashboardPage() {
           <QuickAction
             href="/admin/teachers"
             icon={Users}
-            title="Manage Teachers"
-            description="Review applications, approve or suspend teachers"
+            title="Manage Tutors"
+            description="Review applications, approve or suspend tutors"
             color="text-blue-600"
             bg="bg-blue-100"
           />
@@ -177,7 +176,7 @@ export default async function AdminDashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">
-            Pending Teacher Applications
+            Pending Tutor Applications
           </h2>
           <Link
             href="/admin/teachers"
@@ -193,7 +192,7 @@ export default async function AdminDashboardPage() {
             <CheckCircle2 className="size-10 text-emerald-500 mx-auto mb-3" />
             <p className="font-medium text-foreground">No pending applications</p>
             <p className="text-sm text-muted-foreground mt-1">
-              All teacher applications have been reviewed.
+              All tutor applications have been reviewed.
             </p>
           </Card>
         ) : (
@@ -203,7 +202,7 @@ export default async function AdminDashboardPage() {
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                      Teacher
+                      Tutor
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                       Email
@@ -228,7 +227,7 @@ export default async function AdminDashboardPage() {
                       <td className="px-4 py-3 font-medium text-foreground">
                         {teacher.firstName || teacher.lastName
                           ? `${teacher.firstName || ""} ${teacher.lastName || ""}`.trim()
-                          : "Unnamed Teacher"}
+                          : "Unnamed Tutor"}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {teacher.email}

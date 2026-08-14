@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   BookOpen,
   Users,
@@ -28,27 +29,97 @@ import FeaturedTeachersSection from "@/components/FeaturedTeachersSection";
 
 const subjects = [
   { name: "English", icon: "A", color: "bg-blue-500", textColor: "text-white" },
-  { name: "Tamil", icon: "\u0B87", color: "bg-green-600", textColor: "text-white" },
-  { name: "Math", icon: "\u221A", color: "bg-emerald-500", textColor: "text-white" },
-  { name: "Science", icon: "\u2697", color: "bg-teal-600", textColor: "text-white" },
-  { name: "Yoga", icon: "\u2638", color: "bg-purple-400", textColor: "text-white" },
-  { name: "Music", icon: "\u266B", color: "bg-pink-400", textColor: "text-white" },
-  { name: "Classical Dance", icon: "\uD83D\uDC83", color: "bg-red-500", textColor: "text-white" },
+  {
+    name: "Tamil",
+    icon: "\u0B87",
+    color: "bg-green-600",
+    textColor: "text-white",
+  },
+  {
+    name: "Math",
+    icon: "\u221A",
+    color: "bg-emerald-500",
+    textColor: "text-white",
+  },
+  {
+    name: "Science",
+    icon: "\u2697",
+    color: "bg-teal-600",
+    textColor: "text-white",
+  },
+  {
+    name: "Yoga",
+    icon: "\u2638",
+    color: "bg-purple-400",
+    textColor: "text-white",
+  },
+  {
+    name: "Music",
+    icon: "\u266B",
+    color: "bg-pink-400",
+    textColor: "text-white",
+  },
+  {
+    name: "Classical Dance",
+    icon: "\uD83D\uDC83",
+    color: "bg-red-500",
+    textColor: "text-white",
+  },
 ];
 
 const steps = [
-  { num: 1, title: "Choose a Subject", desc: "Pick the subject or activity you want to learn", icon: BookOpen, color: "text-blue-600" },
-  { num: 2, title: "Select a Tutor", desc: "View tutors and choose the best fit for you", icon: Users, color: "text-blue-600" },
-  { num: 3, title: "Book a Class", desc: "Schedule your class at your convenience", icon: Calendar, color: "text-blue-600" },
-  { num: 4, title: "Start Learning", desc: "Join live classes and achieve your goals", icon: Target, color: "text-blue-600" },
+  {
+    num: 1,
+    title: "Choose a Subject",
+    desc: "Pick the subject or activity you want to learn",
+    icon: BookOpen,
+    color: "text-blue-600",
+  },
+  {
+    num: 2,
+    title: "Select a Tutor",
+    desc: "View tutors and choose the best fit for you",
+    icon: Users,
+    color: "text-blue-600",
+  },
+  {
+    num: 3,
+    title: "Book a Class",
+    desc: "Schedule your class at your convenience",
+    icon: Calendar,
+    color: "text-blue-600",
+  },
+  {
+    num: 4,
+    title: "Start Learning",
+    desc: "Join live classes and achieve your goals",
+    icon: Target,
+    color: "text-blue-600",
+  },
 ];
 
 const benefits = [
   { icon: Users, label: "Live Interactive Classes", color: "text-blue-600" },
-  { icon: Award, label: "Learn from Verified Tutors", color: "text-orange-500" },
-  { icon: Clock, label: "Flexible Timings & Affordable Fees", color: "text-emerald-600" },
-  { icon: Shield, label: "100% Safe & Secure Platform", color: "text-blue-500" },
-  { icon: GraduationCap, label: "Quality Education, Better Future", color: "text-orange-600" },
+  {
+    icon: Award,
+    label: "Learn from Verified Tutors",
+    color: "text-orange-500",
+  },
+  {
+    icon: Clock,
+    label: "Flexible Timings & Affordable Fees",
+    color: "text-emerald-600",
+  },
+  {
+    icon: Shield,
+    label: "100% Safe & Secure Platform",
+    color: "text-blue-500",
+  },
+  {
+    icon: GraduationCap,
+    label: "Quality Education, Better Future",
+    color: "text-orange-600",
+  },
 ];
 
 export function LandingPage() {
@@ -61,21 +132,35 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <div className="relative">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-blue-900" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="SkillNest"
+                width={56}
+                height={56}
+                className="rounded-full object-contain"
+              />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-blue-900 leading-tight">SkillNest</span>
-                <span className="text-[10px] text-gray-500 tracking-wider">ACADEMY</span>
-                <span className="text-[8px] text-orange-500 italic">&bull; Explore &bull; Discover &bull; Achieve &bull;</span>
+                <span className="text-xl font-bold text-blue-900 leading-tight">
+                  SkillNest
+                </span>
+                <span className="text-[10px] text-gray-500 tracking-wider">
+                  ACADEMY
+                </span>
+                <span className="text-[8px] text-orange-500 italic">
+                  &bull; Explore &bull; Discover &bull; Achieve &bull;
+                </span>
               </div>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6">
-              {["Home", "About Us", "Courses", "How It Works", "Pricing", "Contact Us"].map((item) => (
+              {[
+                "Home",
+                "About Us",
+                "Courses",
+                "How It Works",
+                "Pricing",
+                "Contact Us",
+              ].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
@@ -106,14 +191,25 @@ export function LandingPage() {
               className="md:hidden size-10 flex items-center justify-center rounded-lg hover:bg-gray-100"
               onClick={() => setMobileNav(!mobileNav)}
             >
-              {mobileNav ? <X className="size-5" /> : <Menu className="size-5" />}
+              {mobileNav ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
             </button>
           </div>
         </div>
 
         {mobileNav && (
           <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
-            {["Home", "About Us", "Courses", "How It Works", "Pricing", "Contact Us"].map((item) => (
+            {[
+              "Home",
+              "About Us",
+              "Courses",
+              "How It Works",
+              "Pricing",
+              "Contact Us",
+            ].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
@@ -124,10 +220,16 @@ export function LandingPage() {
               </a>
             ))}
             <div className="pt-2 flex flex-col gap-2">
-              <Link href="/login?redirect_url=/teacher" className="text-center rounded-lg border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900">
+              <Link
+                href="/login?redirect_url=/teacher"
+                className="text-center rounded-lg border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900"
+              >
                 Tutor Login
               </Link>
-              <Link href="/login" className="text-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              <Link
+                href="/login"
+                className="text-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
                 Sign In
               </Link>
             </div>
@@ -150,16 +252,38 @@ export function LandingPage() {
               </p>
               <div className="mt-8 flex flex-wrap gap-8">
                 {[
-                  { label: "Verified Tutors", value: "7.5 Lakh+", icon: Award, iconColor: "text-blue-600", bgColor: "bg-blue-50" },
-                  { label: "Students", value: "55 Lakh+", icon: Users, iconColor: "text-orange-500", bgColor: "bg-orange-50" },
-                  { label: "Reviews", value: "4 Lakh+", icon: Star, iconColor: "text-emerald-600", bgColor: "bg-emerald-50" },
+                  {
+                    label: "Verified Tutors",
+                    value: "7.5 Lakh+",
+                    icon: Award,
+                    iconColor: "text-blue-600",
+                    bgColor: "bg-blue-50",
+                  },
+                  {
+                    label: "Students",
+                    value: "55 Lakh+",
+                    icon: Users,
+                    iconColor: "text-orange-500",
+                    bgColor: "bg-orange-50",
+                  },
+                  {
+                    label: "Reviews",
+                    value: "4 Lakh+",
+                    icon: Star,
+                    iconColor: "text-emerald-600",
+                    bgColor: "bg-emerald-50",
+                  },
                 ].map((stat) => (
                   <div key={stat.label} className="flex items-center gap-3">
-                    <div className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                    <div
+                      className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}
+                    >
                       <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
                     </div>
                     <div>
-                      <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {stat.value}
+                      </p>
                       <p className="text-xs text-gray-500">{stat.label}</p>
                     </div>
                   </div>
@@ -207,10 +331,14 @@ export function LandingPage() {
                 key={subject.name}
                 className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group"
               >
-                <div className={`w-14 h-14 ${subject.color} rounded-xl flex items-center justify-center text-xl font-bold ${subject.textColor} group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-14 h-14 ${subject.color} rounded-xl flex items-center justify-center text-xl font-bold ${subject.textColor} group-hover:scale-110 transition-transform`}
+                >
                   {subject.icon}
                 </div>
-                <span className="text-sm font-medium text-gray-700 text-center">{subject.name}</span>
+                <span className="text-sm font-medium text-gray-700 text-center">
+                  {subject.name}
+                </span>
               </div>
             ))}
           </div>
@@ -262,8 +390,11 @@ export function LandingPage() {
               <span className="text-xl">&#128172;</span>
             </div>
             <p className="text-sm text-gray-700">
-              <strong>Students can browse subjects, view the list of expert tutors, check their profiles,
-              ratings & experience, and select the best tutor to start learning.</strong>
+              <strong>
+                Students can browse subjects, view the list of expert tutors,
+                check their profiles, ratings & experience, and select the best
+                tutor to start learning.
+              </strong>
             </p>
           </div>
         </div>
@@ -278,7 +409,9 @@ export function LandingPage() {
                 <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
                   <benefit.icon className={`w-5 h-5 ${benefit.color}`} />
                 </div>
-                <span className="text-sm font-medium text-gray-700">{benefit.label}</span>
+                <span className="text-sm font-medium text-gray-700">
+                  {benefit.label}
+                </span>
               </div>
             ))}
           </div>
@@ -299,23 +432,56 @@ export function LandingPage() {
                 </div>
                 <div>
                   <span className="text-xl font-bold">SkillNest</span>
-                  <span className="text-[10px] text-blue-300 block -mt-1">ACADEMY</span>
-                  <span className="text-[8px] text-orange-400 italic">&bull; Explore &bull; Discover &bull; Achieve &bull;</span>
+                  <span className="text-[10px] text-blue-300 block -mt-1">
+                    ACADEMY
+                  </span>
+                  <span className="text-[8px] text-orange-400 italic">
+                    &bull; Explore &bull; Discover &bull; Achieve &bull;
+                  </span>
                 </div>
               </div>
               <p className="text-sm text-blue-300 leading-relaxed max-w-sm">
-                SkillNest Academy connects students with expert tutors for online & offline
-                learning across subjects and activities.
+                SkillNest Academy connects students with expert tutors for
+                online & offline learning across subjects and activities.
               </p>
               <div className="flex gap-3 mt-4">
                 {[
-                  { label: "Facebook", path: "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" },
-                  { label: "Instagram", path: "M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z" },
-                  { label: "Youtube", path: "M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13C5.12 19.56 12 19.56 12 19.56s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.46zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z" },
-                  { label: "LinkedIn", path: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z" },
+                  {
+                    label: "Facebook",
+                    path: "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z",
+                  },
+                  {
+                    label: "Instagram",
+                    path: "M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z",
+                  },
+                  {
+                    label: "Youtube",
+                    path: "M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13C5.12 19.56 12 19.56 12 19.56s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.46zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z",
+                  },
+                  {
+                    label: "LinkedIn",
+                    path: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z",
+                  },
                 ].map((social) => (
-                  <a key={social.label} href="#" target="_blank" rel="noopener noreferrer" className="size-9 rounded-full bg-blue-800 flex items-center justify-center text-blue-300 hover:bg-blue-700 hover:text-white transition-colors" aria-label={social.label}>
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={social.path} /></svg>
+                  <a
+                    key={social.label}
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="size-9 rounded-full bg-blue-800 flex items-center justify-center text-blue-300 hover:bg-blue-700 hover:text-white transition-colors"
+                    aria-label={social.label}
+                  >
+                    <svg
+                      className="size-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d={social.path} />
+                    </svg>
                   </a>
                 ))}
               </div>
@@ -332,7 +498,12 @@ export function LandingPage() {
                   { label: "Become a Tutor", href: "/register" },
                 ].map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className="hover:text-white transition-colors">{link.label}</a>
+                    <a
+                      href={link.href}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -341,9 +512,19 @@ export function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Subjects</h4>
               <ul className="space-y-2 text-sm text-blue-300">
-                {["English", "Tamil", "Math", "Science", "Yoga", "Music", "Classical Dance"].map((s) => (
+                {[
+                  "English",
+                  "Tamil",
+                  "Math",
+                  "Science",
+                  "Yoga",
+                  "Music",
+                  "Classical Dance",
+                ].map((s) => (
                   <li key={s}>
-                    <a href="#" className="hover:text-white transition-colors">{s}</a>
+                    <a href="#" className="hover:text-white transition-colors">
+                      {s}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -352,9 +533,16 @@ export function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-blue-300">
-                {["Help Center", "Contact Us", "Privacy Policy", "Terms & Conditions"].map((link) => (
+                {[
+                  "Help Center",
+                  "Contact Us",
+                  "Privacy Policy",
+                  "Terms & Conditions",
+                ].map((link) => (
                   <li key={link}>
-                    <a href="#" className="hover:text-white transition-colors">{link}</a>
+                    <a href="#" className="hover:text-white transition-colors">
+                      {link}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -367,14 +555,16 @@ export function LandingPage() {
                   <Mail className="size-4" /> support@skillnestacademy.com
                 </li>
                 <li className="flex items-start gap-2">
-                  <MapPin className="size-4 mt-0.5" /> Chennai, Tamil Nadu, India
+                  <MapPin className="size-4 mt-0.5" /> Chennai, Tamil Nadu,
+                  India
                 </li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-blue-800 text-center py-4 text-sm text-blue-400">
-          &copy; {new Date().getFullYear()} SkillNest Academy. All Rights Reserved.
+          &copy; {new Date().getFullYear()} SkillNest Academy. All Rights
+          Reserved.
         </div>
       </footer>
     </div>

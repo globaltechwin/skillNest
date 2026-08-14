@@ -223,12 +223,12 @@ export function TeacherProfileForm({
             <p className="text-muted-foreground">
               {isEditing
                 ? "Your profile changes have been saved successfully."
-                : "Your teacher profile is currently under verification. We'll notify you once it has been reviewed."}
+                : "Your tutor profile is currently under verification. We'll notify you once it has been reviewed."}
             </p>
           </div>
           {!isEditing && (
             <p className="text-sm text-muted-foreground bg-muted rounded-lg p-4">
-              You can track your profile status from the teacher dashboard. Once
+              You can track your profile status from the tutor dashboard. Once
               approved, your profile will be visible to students.
             </p>
           )}
@@ -237,7 +237,7 @@ export function TeacherProfileForm({
             className="w-full"
             size="lg"
           >
-            Go to Teacher Dashboard
+            Go to Tutor Dashboard
           </Button>
         </Card>
       </div>
@@ -270,7 +270,7 @@ export function TeacherProfileForm({
           </div>
           <div className="h-6 w-px bg-border" />
           <span className="text-sm font-medium text-muted-foreground">
-            {isEditing ? "Edit Profile" : "Teacher Profile Setup"}
+            {isEditing ? "Edit Profile" : "Tutor Profile Setup"}
           </span>
         </div>
       </header>

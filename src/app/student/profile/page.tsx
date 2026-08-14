@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { SignOutButton } from "@/components/SignOutButton";
 
 export default async function StudentProfilePage() {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
@@ -16,10 +15,9 @@ export default async function StudentProfilePage() {
       firstName: true,
       lastName: true,
       email: true,
-      role: true,
     },
   });
-  if (!user || user.role !== "STUDENT") redirect("/login");
+  if (!user) return null;
 
   return (
     <div className="space-y-6">

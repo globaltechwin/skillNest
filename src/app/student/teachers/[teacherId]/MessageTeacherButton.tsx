@@ -46,7 +46,7 @@ export function MessageTeacherButton({ teacherProfileId }: Props) {
         ) : (
           <MessageSquare className="size-4" />
         )}
-        Message Teacher
+        Message Tutor
       </Button>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>

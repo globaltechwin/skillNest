@@ -75,7 +75,7 @@ export function AssignmentsClient({
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search by title, course, or teacher..."
+                placeholder="Search by title, course, or tutor..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -112,7 +112,7 @@ export function AssignmentsClient({
                   Course
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                  Teacher
+                  Tutor
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   Status
@@ -146,7 +146,7 @@ export function AssignmentsClient({
                         <p className="text-sm text-muted-foreground mt-1">
                           {search || statusFilter !== "ALL"
                             ? "Try adjusting your search or filter criteria."
-                            : "Assignments will appear here when teachers create them."}
+                            : "Assignments will appear here when tutors create them."}
                         </p>
                       </div>
                     </div>

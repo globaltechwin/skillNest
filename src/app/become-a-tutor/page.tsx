@@ -58,7 +58,7 @@ export default async function BecomeATutorPage() {
               Become a Tutor
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Share your expertise with students. Switch your account to a teacher
+              Share your expertise with students. Switch your account to a tutor
               account and create your tutor profile.
             </p>
           </div>
@@ -69,8 +69,8 @@ export default async function BecomeATutorPage() {
               {[
                 {
                   icon: CheckCircle2,
-                  title: "Switch to Teacher Account",
-                  desc: "Your account will be changed from Student to Teacher",
+                  title: "Switch to Tutor Account",
+                  desc: "Your account will be changed from Student to Tutor",
                 },
                 {
                   icon: CheckCircle2,
@@ -104,7 +104,7 @@ export default async function BecomeATutorPage() {
           <div className="space-y-3">
             <form action={becomeTutor}>
               <Button type="submit" size="lg" className="w-full">
-                Apply as Teacher
+                Apply as Tutor
                 <ArrowRight className="size-4 ml-2" />
               </Button>
             </form>

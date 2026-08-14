@@ -46,13 +46,13 @@ const benefits = [
 
 export default async function StudentOverviewPage() {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, firstName: true, role: true },
+    select: { id: true, firstName: true },
   });
-  if (!user || user.role !== "STUDENT") redirect("/login");
+  if (!user) return null;
 
   const [
     enrolledCount,
@@ -241,7 +241,7 @@ export default async function StudentOverviewPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">Browse</p>
-                  <p className="text-sm text-muted-foreground">Teachers</p>
+                  <p className="text-sm text-muted-foreground">Tutors</p>
                 </div>
               </div>
             </Card>

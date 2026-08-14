@@ -46,7 +46,7 @@ export function ContactTeacherButton({ teacherId }: Props) {
           ? "Loading..."
           : phone
             ? `Call ${phone}`
-            : "Contact Teacher"}
+            : "Contact Tutor"}
       </Button>
       {error && <p className="text-xs text-destructive">{error}</p>}
       {phone && (

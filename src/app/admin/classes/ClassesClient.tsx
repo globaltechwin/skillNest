@@ -75,7 +75,7 @@ export function ClassesClient({ classes, total, page, totalPages }: Props) {
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search by title, course, or teacher..."
+                placeholder="Search by title, course, or tutor..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -113,7 +113,7 @@ export function ClassesClient({ classes, total, page, totalPages }: Props) {
                   Course
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                  Teacher
+                  Tutor
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   Date
@@ -147,7 +147,7 @@ export function ClassesClient({ classes, total, page, totalPages }: Props) {
                         <p className="text-sm text-muted-foreground mt-1">
                           {search || filter !== "ALL"
                             ? "Try adjusting your search or filter criteria."
-                            : "Class sessions will appear here once teachers create them."}
+                            : "Class sessions will appear here once tutors create them."}
                         </p>
                       </div>
                     </div>

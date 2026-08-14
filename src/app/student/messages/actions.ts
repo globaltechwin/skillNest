@@ -33,7 +33,7 @@ export async function startConversation(
   if (!teacherProfile) {
     return {
       success: false,
-      error: "Teacher not found or not currently available.",
+      error: "Tutor not found or not currently available.",
     };
   }
 
@@ -68,9 +68,9 @@ export async function getStudentConversations() {
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
-  if (!user || user.role !== "STUDENT") return [];
+  if (!user) return [];
 
   const conversations = await prisma.conversation.findMany({
     where: { studentUserId: user.id },
@@ -87,24 +87,25 @@ export async function getStudentConversations() {
         take: 1,
         select: { content: true, createdAt: true },
       },
+      _count: {
+        select: {
+          messages: {
+            where: {
+              senderUserId: { not: user.id },
+              readAt: null,
+            },
+          },
+        },
+      },
     },
     orderBy: { lastMessageAt: "desc" },
   });
 
-  const conversationsWithUnread = await Promise.all(
-    conversations.map(async (conv) => {
-      const unreadCount = await prisma.message.count({
-        where: {
-          conversationId: conv.id,
-          senderUserId: { not: user.id },
-          readAt: null,
-        },
-      });
-      return { ...conv, unreadCount };
-    })
-  );
-
-  return conversationsWithUnread;
+  return conversations.map((conv) => ({
+    ...conv,
+    unreadCount: conv._count.messages,
+    _count: undefined,
+  }));
 }
 
 export async function getStudentConversation(conversationId: string) {
@@ -113,9 +114,9 @@ export async function getStudentConversation(conversationId: string) {
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
-  if (!user || user.role !== "STUDENT") return null;
+  if (!user) return null;
 
   const conversation = await prisma.conversation.findFirst({
     where: {
@@ -142,9 +143,9 @@ export async function getStudentMessages(conversationId: string) {
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
-  if (!user || user.role !== "STUDENT") return [];
+  if (!user) return [];
 
   const conversation = await prisma.conversation.findFirst({
     where: {
@@ -182,7 +183,7 @@ export async function sendMessage(
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true },
   });
   if (!user) {
     return { success: false, error: "User not found." };
@@ -204,19 +205,14 @@ export async function sendMessage(
     return { success: false, error: "Conversation not found." };
   }
 
-  // Only students can send messages through this action
-  if (user.role !== "STUDENT") {
-    return { success: false, error: "Only students can send messages through this action." };
-  }
-
   if (conversation.studentUserId !== user.id) {
     return { success: false, error: "You are not authorized to access this conversation." };
   }
 
-  // Check if teacher is still approved
+  // Check teacher approval and get userId in one query
   const teacherProfile = await prisma.teacherProfile.findUnique({
     where: { id: conversation.teacherProfileId },
-    select: { status: true },
+    select: { status: true, userId: true },
   });
   if (!teacherProfile || teacherProfile.status !== "APPROVED") {
     return { success: false, error: "This teacher is no longer available." };
@@ -238,19 +234,13 @@ export async function sendMessage(
   const senderName =
     `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Someone";
 
-  const teacherProfileForNotify = await prisma.teacherProfile.findUnique({
-    where: { id: conversation.teacherProfileId },
-    select: { userId: true },
+  const { notifyNewMessage } = await import("@/lib/notifications");
+  await notifyNewMessage({
+    recipientUserId: teacherProfile.userId,
+    senderName,
+    conversationId,
+    recipientRole: "TEACHER",
   });
-  if (teacherProfileForNotify) {
-    const { notifyNewMessage } = await import("@/lib/notifications");
-    await notifyNewMessage({
-      recipientUserId: teacherProfileForNotify.userId,
-      senderName,
-      conversationId,
-      recipientRole: "TEACHER",
-    });
-  }
 
   return { success: true };
 }
@@ -261,18 +251,16 @@ export async function markConversationAsRead(conversationId: string) {
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
   if (!user) return;
 
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
-    select: { studentUserId: true, teacherProfileId: true },
+    select: { studentUserId: true },
   });
   if (!conversation) return;
 
-  // Only students can mark conversations as read through this action
-  if (user.role !== "STUDENT") return;
   if (conversation.studentUserId !== user.id) return;
 
   await prisma.message.updateMany({

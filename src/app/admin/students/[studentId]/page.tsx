@@ -162,7 +162,7 @@ export default async function AdminStudentDetailPage({
                 <thead>
                   <tr className="border-b text-left text-muted-foreground">
                     <th className="pb-3 pr-4 font-medium">Course</th>
-                    <th className="pb-3 pr-4 font-medium">Teacher</th>
+                    <th className="pb-3 pr-4 font-medium">Tutor</th>
                     <th className="pb-3 pr-4 font-medium">Status</th>
                     <th className="pb-3 font-medium">Enrolled</th>
                   </tr>

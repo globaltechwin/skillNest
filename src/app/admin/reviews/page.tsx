@@ -34,7 +34,7 @@ export default async function AdminReviewsPage({
                   Student
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                  Teacher
+                  Tutor
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   Rating

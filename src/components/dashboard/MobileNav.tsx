@@ -14,10 +14,12 @@ import {
   Clock,
   MessageSquare,
   Bell,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "./DashboardSidebar";
+import { SignOutButton } from "@/components/SignOutButton";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard,
@@ -79,7 +81,10 @@ export function MobileNav({ navItems, firstName, roleLabel }: Props) {
 
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isRootRoute = item.href === "/teacher" || item.href === "/admin" || item.href === "/student";
+            const isActive = isRootRoute
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(item.href + "/");
             const Icon = iconMap[item.icon];
 
             return (
@@ -105,6 +110,9 @@ export function MobileNav({ navItems, firstName, roleLabel }: Props) {
             );
           })}
         </nav>
+        <div className="px-3 py-4 border-t border-border">
+          <SignOutButton className="w-full justify-start" />
+        </div>
       </div>
     </>
   );

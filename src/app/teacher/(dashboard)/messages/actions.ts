@@ -7,11 +7,6 @@ import { messageSchema } from "@/lib/validations/teacher";
 export async function getTeacherConversations() {
   const authResult = await requireApprovedTeacher();
   const profile = authResult.profile;
-  const user = await prisma.user.findUnique({
-    where: { id: authResult.dbUserId },
-    select: { id: true },
-  });
-  if (!user) return [];
 
   const conversations = await prisma.conversation.findMany({
     where: { teacherProfileId: profile.id },
@@ -24,24 +19,25 @@ export async function getTeacherConversations() {
         take: 1,
         select: { content: true, createdAt: true },
       },
+      _count: {
+        select: {
+          messages: {
+            where: {
+              senderUserId: { not: authResult.dbUserId },
+              readAt: null,
+            },
+          },
+        },
+      },
     },
     orderBy: { lastMessageAt: "desc" },
   });
 
-  const conversationsWithUnread = await Promise.all(
-    conversations.map(async (conv) => {
-      const unreadCount = await prisma.message.count({
-        where: {
-          conversationId: conv.id,
-          senderUserId: { not: user.id },
-          readAt: null,
-        },
-      });
-      return { ...conv, unreadCount };
-    })
-  );
-
-  return conversationsWithUnread;
+  return conversations.map((conv) => ({
+    ...conv,
+    unreadCount: conv._count.messages,
+    _count: undefined,
+  }));
 }
 
 export async function getTeacherConversation(conversationId: string) {
@@ -66,11 +62,6 @@ export async function getTeacherConversation(conversationId: string) {
 export async function getTeacherMessages(conversationId: string) {
   const authResult = await requireApprovedTeacher();
   const profile = authResult.profile;
-  const user = await prisma.user.findUnique({
-    where: { id: authResult.dbUserId },
-    select: { id: true },
-  });
-  if (!user) return [];
 
   const conversation = await prisma.conversation.findFirst({
     where: {
@@ -100,11 +91,6 @@ export async function getTeacherMessages(conversationId: string) {
 export async function markConversationAsRead(conversationId: string) {
   const authResult = await requireApprovedTeacher();
   const profile = authResult.profile;
-  const user = await prisma.user.findUnique({
-    where: { id: authResult.dbUserId },
-    select: { id: true },
-  });
-  if (!user) return;
 
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
@@ -115,7 +101,7 @@ export async function markConversationAsRead(conversationId: string) {
   await prisma.message.updateMany({
     where: {
       conversationId,
-      senderUserId: { not: user.id },
+      senderUserId: { not: authResult.dbUserId },
       readAt: null,
     },
     data: { readAt: new Date() },
@@ -125,11 +111,6 @@ export async function markConversationAsRead(conversationId: string) {
 export async function markAllConversationsAsRead() {
   const authResult = await requireApprovedTeacher();
   const profile = authResult.profile;
-  const user = await prisma.user.findUnique({
-    where: { id: authResult.dbUserId },
-    select: { id: true },
-  });
-  if (!user) return;
 
   const conversations = await prisma.conversation.findMany({
     where: { teacherProfileId: profile.id },
@@ -139,7 +120,7 @@ export async function markAllConversationsAsRead() {
   await prisma.message.updateMany({
     where: {
       conversationId: { in: conversations.map((c) => c.id) },
-      senderUserId: { not: user.id },
+      senderUserId: { not: authResult.dbUserId },
       readAt: null,
     },
     data: { readAt: new Date() },

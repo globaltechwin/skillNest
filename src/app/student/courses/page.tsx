@@ -8,7 +8,7 @@ export default function StudentCoursesPage() {
           Courses
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Browse all courses available from our teachers
+          Browse all courses available from our tutors
         </p>
       </div>
 

@@ -24,7 +24,7 @@ export default async function StudentConversationPage({
   const participant = conversation.teacherProfile.user;
   const participantName =
     `${participant.firstName || ""} ${participant.lastName || ""}`.trim() ||
-    "Teacher";
+    "Tutor";
 
   return (
     <ConversationView

@@ -73,7 +73,7 @@ export default function FeaturedTeachersSection() {
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              Featured Teachers
+              Featured Tutors
             </h2>
             <p className="text-gray-500 mt-1">
               Learn from the Best. Achieve Your Best.
@@ -83,7 +83,7 @@ export default function FeaturedTeachersSection() {
             href="/student/teachers"
             className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
           >
-            View All Teachers <ArrowRight className="size-4" />
+            View All Tutors <ArrowRight className="size-4" />
           </Link>
         </div>
 
@@ -142,7 +142,7 @@ export default function FeaturedTeachersSection() {
                       </span>
 
                       <h3 className="font-bold text-gray-900 text-sm leading-tight">
-                        {fullName || "Unnamed Teacher"}
+                        {fullName || "Unnamed Tutor"}
                       </h3>
 
                       <p className="text-xs text-gray-500 mt-1">
@@ -195,7 +195,7 @@ export default function FeaturedTeachersSection() {
             href="/student/teachers"
             className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
           >
-            View All Teachers <ArrowRight className="size-4" />
+            View All Tutors <ArrowRight className="size-4" />
           </Link>
         </div>
       </div>

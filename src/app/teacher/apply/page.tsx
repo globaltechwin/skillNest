@@ -216,7 +216,7 @@ export default function TeacherApplyPage() {
             <span className="text-lg font-bold tracking-tight text-foreground">SkillNest</span>
           </button>
           <div className="ml-4 pl-4 border-l border-border">
-            <h1 className="text-sm font-semibold text-foreground">Teacher Application</h1>
+            <h1 className="text-sm font-semibold text-foreground">Tutor Application</h1>
             <p className="text-xs text-muted-foreground">Fill out the form below to apply</p>
           </div>
           <button onClick={() => router.push("/")} className="ml-auto text-sm text-muted-foreground hover:text-foreground">
@@ -412,15 +412,15 @@ export default function TeacherApplyPage() {
               </div>
               <div className="space-y-3">
                 {formData.availability.map((slot, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
-                    <Select value={slot.day} onChange={(e) => updateAvailability(i, "day", e.target.value)} className="w-32">
+                  <div key={i} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                    <Select value={slot.day} onChange={(e) => updateAvailability(i, "day", e.target.value)} className="w-full sm:w-32">
                       {DAYS.map((d) => <option key={d} value={d}>{DAY_LABELS[d]}</option>)}
                     </Select>
-                    <Input type="time" value={slot.startTime} onChange={(e) => updateAvailability(i, "startTime", e.target.value)} className="w-32" />
-                    <span className="text-muted-foreground text-sm">to</span>
-                    <Input type="time" value={slot.endTime} onChange={(e) => updateAvailability(i, "endTime", e.target.value)} className="w-32" />
+                    <Input type="time" value={slot.startTime} onChange={(e) => updateAvailability(i, "startTime", e.target.value)} className="w-full sm:w-32" />
+                    <span className="text-muted-foreground text-sm hidden sm:inline">to</span>
+                    <Input type="time" value={slot.endTime} onChange={(e) => updateAvailability(i, "endTime", e.target.value)} className="w-full sm:w-32" />
                     {formData.availability.length > 1 && (
-                      <button onClick={() => removeAvailability(i)} className="text-muted-foreground hover:text-red-600 ml-auto"><Trash2 className="size-4" /></button>
+                      <button onClick={() => removeAvailability(i)} className="text-muted-foreground hover:text-red-600 sm:ml-auto"><Trash2 className="size-4" /></button>
                     )}
                   </div>
                 ))}

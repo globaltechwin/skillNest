@@ -1,39 +1,32 @@
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { TeacherProfileForm } from "./TeacherProfileForm";
 
 export default async function TeacherProfilePage() {
   const session = await auth();
-
-  if (!session) {
-    redirect("/login");
-  }
+  if (!session) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { id: true, firstName: true, lastName: true, role: true },
+    select: { id: true, firstName: true, lastName: true },
   });
+  if (!user) return null;
 
-  if (!user || user.role !== "TEACHER") {
-    redirect("/login");
-  }
-
-  const subjects = await prisma.subject.findMany({
-    orderBy: { name: "asc" },
-  });
-
-  // Get existing profile if editing
-  const existingProfile = await prisma.teacherProfile.findUnique({
-    where: { userId: user.id },
-    include: {
-      subjects: {
-        include: { subject: true },
+  const [subjects, existingProfile] = await Promise.all([
+    prisma.subject.findMany({
+      orderBy: { name: "asc" },
+    }),
+    prisma.teacherProfile.findUnique({
+      where: { userId: user.id },
+      include: {
+        subjects: {
+          include: { subject: true },
+        },
+        availability: true,
+        qualifications: true,
       },
-      availability: true,
-      qualifications: true,
-    },
-  });
+    }),
+  ]);
 
   const profileImageUrl = existingProfile?.profilePhotoUrl || null;
 

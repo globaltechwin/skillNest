@@ -8,8 +8,9 @@ import { MobileNav } from "@/components/dashboard/MobileNav";
 import { prisma } from "@/lib/prisma";
 
 const navItems: NavItem[] = [
+  { label: "Home", href: "/", icon: "Home" },
   { label: "Overview", href: "/admin", icon: "LayoutDashboard" },
-  { label: "Teachers", href: "/admin/teachers", icon: "Users" },
+  { label: "Tutors", href: "/admin/teachers", icon: "Users" },
   { label: "Students", href: "/admin/students", icon: "User" },
   { label: "Courses", href: "/admin/courses", icon: "BookOpen" },
   { label: "Reviews", href: "/admin/reviews", icon: "Star" },
@@ -53,7 +54,7 @@ export default async function AdminLayout({
                 Admin Dashboard
               </h1>
               <p className="text-xs text-muted-foreground hidden sm:block">
-                Manage teachers, students, courses and platform
+                Manage tutors, students, courses and platform
               </p>
             </div>
           </div>

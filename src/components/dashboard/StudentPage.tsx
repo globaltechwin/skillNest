@@ -390,7 +390,7 @@ function Footer() {
 
       <div className="border-t border-blue-800 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-sm text-blue-400">
-          &copy; 2024 SkillNest Academy. All Rights Reserved.
+          &copy; {new Date().getFullYear()} SkillNest Academy. All Rights Reserved.
         </div>
       </div>
     </footer>

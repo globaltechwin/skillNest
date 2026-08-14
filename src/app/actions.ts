@@ -31,30 +31,30 @@ export async function getPublicFeaturedTeachers(): Promise<PublicTeacher[]> {
     take: 10,
   });
 
-  console.log("SERVER: Found", profiles.length, "approved teacher profiles");
-  for (const p of profiles) {
-    console.log("SERVER:", p.user.firstName, p.user.lastName, p.status);
-  }
+  const teacherIds = profiles.map((p) => p.id);
 
-  const teachers: PublicTeacher[] = await Promise.all(
-    profiles.map(async (p) => {
-      const stats = await prisma.review.aggregate({
-        where: { teacherProfileId: p.id },
-        _avg: { rating: true },
-        _count: { rating: true },
-      });
-      return {
-        id: p.id,
-        firstName: p.user.firstName,
-        lastName: p.user.lastName,
-        profilePhotoUrl: p.profilePhotoUrl,
-        yearsOfExperience: p.yearsOfExperience,
-        subjects: p.subjects.map((s) => ({ name: s.subject.name })),
-        averageRating: stats._avg.rating,
-        reviewCount: stats._count.rating,
-      };
-    })
+  const reviewStats = await prisma.review.groupBy({
+    by: ["teacherProfileId"],
+    where: { teacherProfileId: { in: teacherIds } },
+    _avg: { rating: true },
+    _count: { rating: true },
+  });
+
+  const statsMap = new Map(
+    reviewStats.map((s) => [
+      s.teacherProfileId,
+      { averageRating: s._avg.rating, reviewCount: s._count.rating },
+    ])
   );
 
-  return teachers;
+  return profiles.map((p) => ({
+    id: p.id,
+    firstName: p.user.firstName,
+    lastName: p.user.lastName,
+    profilePhotoUrl: p.profilePhotoUrl,
+    yearsOfExperience: p.yearsOfExperience,
+    subjects: p.subjects.map((s) => ({ name: s.subject.name })),
+    averageRating: statsMap.get(p.id)?.averageRating ?? null,
+    reviewCount: statsMap.get(p.id)?.reviewCount ?? 0,
+  }));
 }

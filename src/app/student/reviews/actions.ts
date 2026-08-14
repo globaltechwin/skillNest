@@ -201,7 +201,7 @@ export async function createReview(
 
   const isApproved = await verifyApprovedTeacher(teacherProfileId);
   if (!isApproved) {
-    return { success: false, error: "Teacher not found or not currently available." };
+    return { success: false, error: "Tutor not found or not currently available." };
   }
 
   const enrollment = await prisma.courseEnrollment.findFirst({

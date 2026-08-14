@@ -98,7 +98,7 @@ export function TeacherListClient({
 
       {/* Results count */}
       <div className="text-sm text-muted-foreground">
-        {total} {total === 1 ? "teacher" : "teachers"} found
+        {total} {total === 1 ? "tutor" : "tutors"} found
       </div>
 
       {/* Teacher grid */}
@@ -111,7 +111,7 @@ export function TeacherListClient({
       ) : (
         <EmptyState
           icon={Search}
-          title="No teachers found"
+          title="No tutors found"
           description="Try changing your search or filters."
         />
       )}

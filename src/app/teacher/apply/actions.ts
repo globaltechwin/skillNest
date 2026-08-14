@@ -44,7 +44,7 @@ export async function submitTeacherApplication(
   });
 
   if (!user || user.role !== "TEACHER") {
-    return { success: false, error: "Teacher account required." };
+    return { success: false, error: "Tutor account required." };
   }
 
   const existingProfile = await prisma.teacherProfile.findUnique({
@@ -85,76 +85,99 @@ export async function submitTeacherApplication(
     return { success: false, error: "One or more selected subjects are invalid." };
   }
 
+  // Merge same-day availability slots (schema allows only one slot per day)
+  const daySlots = new Map<string, { startTime: string; endTime: string }>();
+  for (const slot of v.availability) {
+    const existing = daySlots.get(slot.day);
+    if (existing) {
+      existing.startTime =
+        existing.startTime < slot.startTime ? existing.startTime : slot.startTime;
+      existing.endTime =
+        existing.endTime > slot.endTime ? existing.endTime : slot.endTime;
+    } else {
+      daySlots.set(slot.day, { startTime: slot.startTime, endTime: slot.endTime });
+    }
+  }
+  const mergedAvailability = Array.from(daySlots, ([day, times]) => ({
+    day: day as DayOfWeek,
+    ...times,
+  }));
+
   try {
-    await prisma.$transaction(async (tx) => {
-      // Create or update teacher profile
-      const existingProfile = await tx.teacherProfile.findUnique({
-        where: { userId: user.id },
-      });
-
-      const profileData = {
-        bio: v.bio || null,
-        phone: v.phone,
-        gender: v.gender || null,
-        location: v.location,
-        teachingMode: v.teachingMode || "BOTH",
-        yearsOfExperience: v.yearsOfExperience || 0,
-        teachingApproach: null,
-        languages: (v.languages || []).join(", "),
-        teachingLevels: (v.teachingLevels || []).join(", "),
-        status: "PENDING_VERIFICATION" as const,
-      };
-
-      let profile;
-      if (existingProfile) {
-        profile = await tx.teacherProfile.update({
-          where: { id: existingProfile.id },
-          data: profileData,
+    await prisma.$transaction(
+      async (tx) => {
+        // Create or update teacher profile
+        const existingProfile = await tx.teacherProfile.findUnique({
+          where: { userId: user.id },
         });
-        // Clear existing data
-        await tx.teacherSubject.deleteMany({ where: { teacherProfileId: profile.id } });
-        await tx.teacherQualification.deleteMany({ where: { teacherProfileId: profile.id } });
-        await tx.teacherAvailability.deleteMany({ where: { teacherProfileId: profile.id } });
-      } else {
-        profile = await tx.teacherProfile.create({
-          data: { userId: user.id, ...profileData },
-        });
-      }
 
-      // Create subjects using validated IDs
-      for (const subjectId of v.subjectIds) {
-        await tx.teacherSubject.create({
-          data: { teacherProfileId: profile.id, subjectId },
-        });
-      }
+        const profileData = {
+          bio: v.bio || null,
+          phone: v.phone,
+          gender: v.gender || null,
+          location: v.location,
+          teachingMode: v.teachingMode || "BOTH",
+          yearsOfExperience: v.yearsOfExperience || 0,
+          teachingApproach: null,
+          languages: (v.languages || []).join(", "),
+          teachingLevels: (v.teachingLevels || []).join(", "),
+          status: "PENDING_VERIFICATION" as const,
+        };
 
-      // Create qualifications
-      for (const qual of v.qualifications || []) {
-        if (qual.title) {
-          await tx.teacherQualification.create({
-            data: {
-              teacherProfileId: profile.id,
-              title: qual.title,
-              field: qual.field || null,
-              institution: qual.institution || null,
-              year: qual.year || null,
-            },
+        let profile;
+        if (existingProfile) {
+          profile = await tx.teacherProfile.update({
+            where: { id: existingProfile.id },
+            data: profileData,
+          });
+          // Clear existing data
+          await tx.teacherSubject.deleteMany({ where: { teacherProfileId: profile.id } });
+          await tx.teacherQualification.deleteMany({ where: { teacherProfileId: profile.id } });
+          await tx.teacherAvailability.deleteMany({ where: { teacherProfileId: profile.id } });
+        } else {
+          profile = await tx.teacherProfile.create({
+            data: { userId: user.id, ...profileData },
           });
         }
-      }
 
-      // Create availability
-      for (const avail of v.availability) {
-        await tx.teacherAvailability.create({
-          data: {
-            teacherProfileId: profile.id,
-            day: avail.day as DayOfWeek,
-            startTime: avail.startTime,
-            endTime: avail.endTime,
-          },
-        });
-      }
-    });
+        // Create subjects using validated IDs
+        if (v.subjectIds.length > 0) {
+          await tx.teacherSubject.createMany({
+            data: v.subjectIds.map((subjectId) => ({
+              teacherProfileId: profile.id,
+              subjectId,
+            })),
+          });
+        }
+
+        // Create qualifications
+        const quals = (v.qualifications || []).filter((q) => q.title);
+        if (quals.length > 0) {
+          await tx.teacherQualification.createMany({
+            data: quals.map((q) => ({
+              teacherProfileId: profile.id,
+              title: q.title,
+              field: q.field || null,
+              institution: q.institution || null,
+              year: q.year || null,
+            })),
+          });
+        }
+
+        // Create availability
+        if (mergedAvailability.length > 0) {
+          await tx.teacherAvailability.createMany({
+            data: mergedAvailability.map((slot) => ({
+              teacherProfileId: profile.id,
+              day: slot.day,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+            })),
+          });
+        }
+      },
+      { timeout: 30000 }
+    );
 
     return { success: true };
   } catch (error) {

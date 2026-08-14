@@ -91,7 +91,7 @@ export default async function TeacherProfilePage({
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
-        Back to Teachers
+        Back to Tutors
       </Link>
 
       {/* Header card */}

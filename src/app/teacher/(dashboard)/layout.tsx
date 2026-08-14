@@ -8,6 +8,7 @@ import {
 import { MobileNav } from "@/components/dashboard/MobileNav";
 
 const navItems: NavItem[] = [
+  { label: "Home", href: "/", icon: "Home" },
   { label: "Overview", href: "/teacher", icon: "LayoutDashboard" },
   { label: "My Classes", href: "/teacher/classes", icon: "Calendar" },
   { label: "My Students", href: "/teacher/students", icon: "Users" },
@@ -60,13 +61,13 @@ export default async function TeacherDashboardLayout({
       <DashboardSidebar
         navItems={navItemsWithBadge}
         firstName={user.firstName}
-        roleLabel="Teacher"
+        roleLabel="Tutor"
         roleColor="text-orange-600"
       />
       <MobileNav
         navItems={navItemsWithBadge}
         firstName={user.firstName}
-        roleLabel="Teacher"
+        roleLabel="Tutor"
       />
       <main className="lg:ml-64">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

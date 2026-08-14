@@ -47,7 +47,7 @@ export default async function PublicCoursePage({
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
-        Back to Teacher Profile
+        Back to Tutor Profile
       </Link>
 
       <Card className="p-6">

@@ -52,7 +52,7 @@ export default async function AdminCoursesPage({
                   Course Title
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
-                  Teacher
+                  Tutor
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   Subject
@@ -86,7 +86,7 @@ export default async function AdminCoursesPage({
                         <p className="text-sm text-muted-foreground mt-1">
                           {search || status !== "ALL"
                             ? "Try adjusting your search or filter criteria."
-                            : "Courses will appear here when teachers create them."}
+                            : "Courses will appear here when tutors create them."}
                         </p>
                       </div>
                     </div>

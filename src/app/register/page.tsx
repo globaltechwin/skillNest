@@ -76,7 +76,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="text-center">
                   <p className="font-semibold text-foreground">Student</p>
-                  <p className="text-xs text-muted-foreground mt-1">Find courses & teachers</p>
+                  <p className="text-xs text-muted-foreground mt-1">Find courses & tutors</p>
                 </div>
               </button>
 
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                   <BookOpen className="size-6 text-emerald-600" />
                 </div>
                 <div className="text-center">
-                  <p className="font-semibold text-foreground">Teacher</p>
+                  <p className="font-semibold text-foreground">Tutor</p>
                   <p className="text-xs text-muted-foreground mt-1">Share your expertise</p>
                 </div>
               </button>
@@ -98,7 +98,7 @@ export default function RegisterPage() {
           <>
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {role === "TEACHER" ? "Teacher" : "Student"} Registration
+                {role === "TEACHER" ? "Tutor" : "Student"} Registration
               </h1>
               <p className="text-sm text-muted-foreground mt-1">Fill in your details to get started</p>
             </div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-1.5">
                     First name *

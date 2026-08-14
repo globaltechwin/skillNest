@@ -1,8 +1,7 @@
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { MarkAllReadButton } from "./MarkAllReadButton";
@@ -52,31 +51,19 @@ function formatTime(date: Date): string {
 
 export default async function TeacherNotificationsPage() {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
-  if (!user || user.role !== "TEACHER") redirect("/login");
+  if (!user) return null;
 
-  const profile = await prisma.teacherProfile.findUnique({
+  const notifications = await prisma.notification.findMany({
     where: { userId: user.id },
-    select: { status: true },
+    orderBy: { createdAt: "desc" },
+    take: 50,
   });
-  if (!profile || profile.status !== "APPROVED") redirect("/login");
-
-  const [notifications] = await Promise.all([
-    prisma.notification.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    }),
-    prisma.notification.updateMany({
-      where: { userId: user.id, readAt: null },
-      data: { readAt: new Date() },
-    }),
-  ]);
 
   return (
     <div className="space-y-6">

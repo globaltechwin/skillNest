@@ -143,7 +143,7 @@ export async function acceptEnrollment(
       });
 
       return { success: true as const };
-    });
+    }, { timeout: 30000 });
 
     if (!result.success) {
       return { success: false, error: result.error };

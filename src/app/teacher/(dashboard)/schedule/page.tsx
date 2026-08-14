@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -38,19 +37,19 @@ function formatDayHeader(date: Date): string {
 
 export default async function TeacherSchedulePage() {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, role: true },
+    select: { id: true },
   });
-  if (!user || user.role !== "TEACHER") redirect("/login");
+  if (!user) return null;
 
   const profile = await prisma.teacherProfile.findUnique({
     where: { userId: user.id },
-    select: { id: true, status: true },
+    select: { id: true },
   });
-  if (!profile || profile.status !== "APPROVED") redirect("/login");
+  if (!profile) return null;
 
   const now = new Date();
 

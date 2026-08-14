@@ -50,14 +50,6 @@ export async function getTeachers(
     return { teachers: [], total: 0, page: 1, pageSize: PAGE_SIZE, totalPages: 0 };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: clerkUserId },
-    select: { role: true },
-  });
-  if (!user || user.role !== "STUDENT") {
-    return { teachers: [], total: 0, page: 1, pageSize: PAGE_SIZE, totalPages: 0 };
-  }
-
   const page = filters.page || 1;
   const skip = (page - 1) * PAGE_SIZE;
 
@@ -197,12 +189,6 @@ export async function getTeacherProfile(teacherId: string) {
   const { userId: clerkUserId } = await auth();
   if (!clerkUserId) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: clerkUserId },
-    select: { role: true },
-  });
-  if (!user || user.role !== "STUDENT") return null;
-
   const profile = await prisma.teacherProfile.findUnique({
     where: { id: teacherId, status: "APPROVED" },
     include: {
@@ -310,17 +296,10 @@ export async function getTeacherPhone(teacherId: string): Promise<string | null>
   const { userId: clerkUserId } = await auth();
   if (!clerkUserId) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: clerkUserId },
-    select: { id: true, role: true },
-  });
-
-  if (!user || user.role !== "STUDENT") return null;
-
   // Only return phone if student has an accepted enrollment with this teacher
   const enrollment = await prisma.courseEnrollment.findFirst({
     where: {
-      studentUserId: user.id,
+      studentUserId: clerkUserId,
       status: "ACCEPTED",
       course: { teacherProfileId: teacherId },
     },

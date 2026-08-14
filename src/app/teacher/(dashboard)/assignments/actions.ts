@@ -73,31 +73,23 @@ export async function getTeacherAssignments(): Promise<AssignmentListItem[]> {
           subject: { select: { name: true } },
         },
       },
+      _count: { select: { submissions: true } },
     },
     orderBy: { updatedAt: "desc" },
   });
 
-  const assignmentsWithCount = await Promise.all(
-    assignments.map(async (a) => {
-      const submissionCount = await prisma.assignmentSubmission.count({
-        where: { assignmentId: a.id },
-      });
-      return {
-        id: a.id,
-        title: a.title,
-        description: a.description,
-        dueDate: a.dueDate,
-        maxMarks: a.maxMarks,
-        status: a.status,
-        createdAt: a.createdAt,
-        updatedAt: a.updatedAt,
-        course: a.course,
-        _count: { submissions: submissionCount },
-      };
-    })
-  );
-
-  return assignmentsWithCount;
+  return assignments.map((a) => ({
+    id: a.id,
+    title: a.title,
+    description: a.description,
+    dueDate: a.dueDate,
+    maxMarks: a.maxMarks,
+    status: a.status,
+    createdAt: a.createdAt,
+    updatedAt: a.updatedAt,
+    course: a.course,
+    _count: { submissions: a._count.submissions },
+  }));
 }
 
 export async function getAssignmentForEdit(

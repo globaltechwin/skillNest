@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { TeacherListClient } from "./TeacherListClient";
 import { getTeachersWithRatings } from "./actions";
@@ -10,13 +9,7 @@ export default async function StudentTeachersPage({
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
-
-  const user = await prisma.user.findUnique({
-    where: { id: clerkUserId },
-    select: { role: true },
-  });
-  if (!user || user.role !== "STUDENT") redirect("/login");
+  if (!clerkUserId) return null;
 
   const params = await searchParams;
   const page = Math.max(1, parseInt(params.page || "1", 10));
@@ -44,10 +37,10 @@ export default async function StudentTeachersPage({
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold tracking-tight text-foreground">
-          Find Teachers
+          Find Tutors
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Browse approved teachers and find the right match for you.
+          Browse approved tutors and find the right match for you.
         </p>
       </div>
 

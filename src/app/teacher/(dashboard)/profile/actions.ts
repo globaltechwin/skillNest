@@ -29,7 +29,7 @@ export async function uploadProfilePhoto(file: File): Promise<{ success: boolean
       where: { userId: user.id },
       select: { id: true, profilePhotoUrl: true },
     });
-    if (!profile) return { success: false, error: "Teacher profile not found." };
+    if (!profile) return { success: false, error: "Tutor profile not found." };
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -129,7 +129,7 @@ export async function saveTeacherProfile(
     if (!user || user.role !== "TEACHER") {
       return {
         success: false,
-        error: "Only teachers can create or edit teacher profiles.",
+        error: "Only tutors can create or edit tutor profiles.",
         errors: null,
       };
     }

@@ -21,7 +21,7 @@ export default async function StudentMessagesPage() {
         emptyTitle="No messages yet"
         emptyDescription="Contact a teacher to start a conversation."
         emptyHref="/student/teachers"
-        emptyButtonText="Find Teachers"
+        emptyButtonText="Find Tutors"
       />
     </div>
   );

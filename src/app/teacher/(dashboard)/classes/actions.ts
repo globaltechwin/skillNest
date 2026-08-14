@@ -37,35 +37,29 @@ export async function getTeacherClasses(): Promise<ClassListItem[]> {
           id: true,
           title: true,
           subject: { select: { name: true } },
+          _count: {
+            select: { enrollments: { where: { status: "ACCEPTED" } } },
+          },
         },
       },
     },
     orderBy: { startTime: "desc" },
   });
 
-  const classesWithCount = await Promise.all(
-    classes.map(async (c) => {
-      const enrollmentCount = await prisma.courseEnrollment.count({
-        where: { courseId: c.courseId, status: "ACCEPTED" },
-      });
-      return {
-        id: c.id,
-        title: c.title,
-        description: c.description,
-        startTime: c.startTime,
-        endTime: c.endTime,
-        mode: c.mode,
-        location: c.location,
-        meetingUrl: c.meetingUrl,
-        status: c.status,
-        createdAt: c.createdAt,
-        course: c.course,
-        _count: { enrollments: enrollmentCount },
-      };
-    })
-  );
-
-  return classesWithCount;
+  return classes.map((c) => ({
+    id: c.id,
+    title: c.title,
+    description: c.description,
+    startTime: c.startTime,
+    endTime: c.endTime,
+    mode: c.mode,
+    location: c.location,
+    meetingUrl: c.meetingUrl,
+    status: c.status,
+    createdAt: c.createdAt,
+    course: { id: c.course.id, title: c.course.title, subject: c.course.subject },
+    _count: { enrollments: c.course._count.enrollments },
+  }));
 }
 
 export async function getTeacherClass(classId: string): Promise<ClassListItem | null> {

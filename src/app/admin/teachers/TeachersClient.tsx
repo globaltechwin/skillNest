@@ -176,14 +176,14 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
       {/* Toast */}
       {toast && (
         <div className={`fixed top-4 right-4 z-[100] px-4 py-3 rounded-lg text-sm font-medium shadow-lg transition-all ${toast.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
-          {toast.message}
+              {toast.message}
         </div>
       )}
 
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-foreground">Teachers</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage teacher verification and applications</p>
+        <h2 className="text-xl font-bold tracking-tight text-foreground">Tutors</h2>
+        <p className="text-sm text-muted-foreground mt-1">Manage tutor verification and applications</p>
       </div>
 
       {/* Search & Filter */}
@@ -192,7 +192,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input placeholder="Search teachers by name or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Input placeholder="Search tutors by name or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
           </div>
           <div className="w-44">
@@ -213,7 +213,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Teacher Name</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Tutor Name</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Email</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Joined</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
@@ -229,9 +229,9 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                         <Search className="size-6 text-muted-foreground" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">No teachers found</p>
+                        <p className="font-medium text-foreground">No tutors found</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          {search || statusFilter !== "ALL" ? "Try adjusting your search or filter criteria." : "Teacher accounts will appear here when users register as teachers."}
+                          {search || statusFilter !== "ALL" ? "Try adjusting your search or filter criteria." : "Tutor accounts will appear here when users register as tutors."}
                         </p>
                       </div>
                     </div>
@@ -241,7 +241,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                 teachers.map((teacher) => (
                   <tr key={teacher.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-medium text-foreground">
-                      {teacher.firstName || teacher.lastName ? `${teacher.firstName || ""} ${teacher.lastName || ""}`.trim() : "Unnamed Teacher"}
+                      {teacher.firstName || teacher.lastName ? `${teacher.firstName || ""} ${teacher.lastName || ""}`.trim() : "Unnamed Tutor"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{teacher.email}</td>
                     <td className="px-4 py-3 text-muted-foreground">
@@ -252,7 +252,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                       <div className="flex items-center gap-2">
                         <InlinePhotoUpload
                           teacherId={teacher.id}
-                          teacherName={`${teacher.firstName || ""} ${teacher.lastName || ""}`.trim() || "Teacher"}
+                          teacherName={`${teacher.firstName || ""} ${teacher.lastName || ""}`.trim() || "Tutor"}
                         />
                         <Button variant="ghost" size="sm" onClick={() => loadApplication(teacher)} disabled={isPending}>
                           <Eye className="size-3.5 mr-1" /> View
@@ -273,7 +273,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-sm text-muted-foreground">
-              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} teachers
+              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} tutors
             </p>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => updateParams(search, statusFilter, page - 1)}>
@@ -300,7 +300,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                   {applicationData?.profile.profilePhotoUrl ? (
                     <img
                       src={applicationData.profile.profilePhotoUrl}
-                      alt={viewingTeacher.firstName || "Teacher"}
+                      alt={viewingTeacher.firstName || "Tutor"}
                       className="size-14 rounded-full object-cover ring-2 ring-border shrink-0"
                     />
                   ) : (
@@ -311,11 +311,11 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                     </div>
                   )}
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">Teacher Application</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Tutor Application</h3>
                     <p className="text-sm text-muted-foreground mt-0.5">
                       {viewingTeacher.firstName || viewingTeacher.lastName
                         ? `${viewingTeacher.firstName || ""} ${viewingTeacher.lastName || ""}`.trim()
-                        : "Unnamed Teacher"} — {viewingTeacher.email}
+                        : "Unnamed Tutor"} — {viewingTeacher.email}
                     </p>
                   </div>
                 </div>
@@ -407,7 +407,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                       className="mt-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] placeholder:text-muted-foreground"
                       value={reviewNote}
                       onChange={(e) => setReviewNote(e.target.value)}
-                      placeholder="Add a note for the teacher (shown when rejected)..."
+                      placeholder="Add a note for the tutor (shown when rejected)..."
                     />
                   </div>
 
@@ -438,7 +438,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
           <div className="absolute inset-0 bg-black/50" onClick={() => !isPending && setEditingTeacher(null)} />
           <div className="relative bg-card rounded-xl shadow-xl w-full max-w-md mx-4 p-6 space-y-6 ring-1 ring-border">
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Edit Teacher Status</h3>
+              <h3 className="text-lg font-semibold text-foreground">Edit Tutor Status</h3>
               <p className="text-sm text-muted-foreground mt-1">Update verification status</p>
             </div>
 
@@ -448,7 +448,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                 <p className="text-sm text-muted-foreground mt-0.5">
                   {editingTeacher.firstName || editingTeacher.lastName
                     ? `${editingTeacher.firstName || ""} ${editingTeacher.lastName || ""}`.trim()
-                    : "Unnamed Teacher"}
+                    : "Unnamed Tutor"}
                 </p>
               </div>
               <div>
@@ -456,7 +456,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                 <p className="text-sm text-muted-foreground mt-0.5">{editingTeacher.email}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Teacher Status</label>
+                <label className="text-sm font-medium text-foreground">Tutor Status</label>
                 <Select id="edit-status-select" defaultValue={editingTeacher.status} className="mt-1.5">
                   <option value="PENDING_VERIFICATION">Pending</option>
                   <option value="APPROVED">Verified</option>
@@ -469,7 +469,7 @@ export function TeachersClient({ teachers, total, page, totalPages }: Props) {
                   className="mt-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px] placeholder:text-muted-foreground"
                   defaultValue={reviewNote}
                   onChange={(e) => setReviewNote(e.target.value)}
-                  placeholder="Add a note for the teacher..."
+                  placeholder="Add a note for the tutor..."
                 />
               </div>
             </div>

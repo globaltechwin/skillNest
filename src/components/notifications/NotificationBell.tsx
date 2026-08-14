@@ -57,8 +57,10 @@ export function NotificationBell({ role }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getUnreadNotificationCount().then(setUnreadCount);
-  }, []);
+    if (open) {
+      getUnreadNotificationCount().then(setUnreadCount);
+    }
+  }, [open]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

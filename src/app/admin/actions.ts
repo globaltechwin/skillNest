@@ -28,21 +28,84 @@ export type DashboardCounts = {
   approvedTeachers: number;
   pendingTeachers: number;
   rejectedTeachers: number;
+  suspendedTeachers: number;
+  totalCourses: number;
+  publishedCourses: number;
+  draftCourses: number;
+  totalEnrollments: number;
+  acceptedEnrollments: number;
+  pendingEnrollments: number;
+  totalAssignments: number;
+  publishedAssignments: number;
+  totalSubmissions: number;
+  totalClasses: number;
+  upcomingClasses: number;
+  totalConversations: number;
 };
 
 export async function getDashboardCounts(): Promise<DashboardCounts> {
   await requireAdmin();
 
-  const [totalStudents, totalTeachers, approvedTeachers, pendingTeachers, rejectedTeachers] =
-    await Promise.all([
-      prisma.user.count({ where: { role: "STUDENT" } }),
-      prisma.user.count({ where: { role: "TEACHER" } }),
-      prisma.teacherProfile.count({ where: { status: "APPROVED" } }),
-      prisma.teacherProfile.count({ where: { status: "PENDING_VERIFICATION" } }),
-      prisma.teacherProfile.count({ where: { status: "REJECTED" } }),
-    ]);
+  const [
+    totalStudents,
+    totalTeachers,
+    approvedTeachers,
+    pendingTeachers,
+    rejectedTeachers,
+    suspendedTeachers,
+    totalCourses,
+    publishedCourses,
+    draftCourses,
+    totalEnrollments,
+    acceptedEnrollments,
+    pendingEnrollments,
+    totalAssignments,
+    publishedAssignments,
+    totalSubmissions,
+    totalClasses,
+    upcomingClasses,
+    totalConversations,
+  ] = await Promise.all([
+    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { role: "TEACHER" } }),
+    prisma.teacherProfile.count({ where: { status: "APPROVED" } }),
+    prisma.teacherProfile.count({ where: { status: "PENDING_VERIFICATION" } }),
+    prisma.teacherProfile.count({ where: { status: "REJECTED" } }),
+    prisma.teacherProfile.count({ where: { status: "SUSPENDED" } }),
+    prisma.course.count(),
+    prisma.course.count({ where: { status: "PUBLISHED" } }),
+    prisma.course.count({ where: { status: "DRAFT" } }),
+    prisma.courseEnrollment.count(),
+    prisma.courseEnrollment.count({ where: { status: "ACCEPTED" } }),
+    prisma.courseEnrollment.count({ where: { status: "PENDING" } }),
+    prisma.assignment.count(),
+    prisma.assignment.count({ where: { status: "PUBLISHED" } }),
+    prisma.assignmentSubmission.count(),
+    prisma.classSession.count(),
+    prisma.classSession.count({ where: { startTime: { gte: new Date() } } }),
+    prisma.conversation.count(),
+  ]);
 
-  return { totalStudents, totalTeachers, approvedTeachers, pendingTeachers, rejectedTeachers };
+  return {
+    totalStudents,
+    totalTeachers,
+    approvedTeachers,
+    pendingTeachers,
+    rejectedTeachers,
+    suspendedTeachers,
+    totalCourses,
+    publishedCourses,
+    draftCourses,
+    totalEnrollments,
+    acceptedEnrollments,
+    pendingEnrollments,
+    totalAssignments,
+    publishedAssignments,
+    totalSubmissions,
+    totalClasses,
+    upcomingClasses,
+    totalConversations,
+  };
 }
 
 // ─── Teachers ──────────────────────────────────────────────────────
@@ -155,6 +218,13 @@ export async function getStudents(
   const [users, total] = await Promise.all([
     prisma.user.findMany({
       where,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+      },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
@@ -196,7 +266,7 @@ export async function updateTeacherStatus(
   });
 
   if (!user || user.role !== "TEACHER") {
-    return { success: false, error: "Teacher not found." };
+    return { success: false, error: "Tutor not found." };
   }
 
   const profile = await prisma.teacherProfile.findUnique({
@@ -205,7 +275,7 @@ export async function updateTeacherStatus(
   });
 
   if (!profile) {
-    return { success: false, error: "Teacher profile not found." };
+    return { success: false, error: "Tutor profile not found." };
   }
 
   await prisma.teacherProfile.update({
@@ -293,71 +363,7 @@ export async function getTeacherApplication(
 
 // ─── Platform Stats ────────────────────────────────────────────────
 
-export type PlatformStats = {
-  suspendedTeachers: number;
-  totalCourses: number;
-  publishedCourses: number;
-  draftCourses: number;
-  totalEnrollments: number;
-  acceptedEnrollments: number;
-  pendingEnrollments: number;
-  totalAssignments: number;
-  publishedAssignments: number;
-  totalSubmissions: number;
-  totalClasses: number;
-  upcomingClasses: number;
-  totalConversations: number;
-};
-
-export async function getPlatformStats(): Promise<PlatformStats> {
-  await requireAdmin();
-
-  const [
-    suspendedTeachers,
-    totalCourses,
-    publishedCourses,
-    draftCourses,
-    totalEnrollments,
-    acceptedEnrollments,
-    pendingEnrollments,
-    totalAssignments,
-    publishedAssignments,
-    totalSubmissions,
-    totalClasses,
-    upcomingClasses,
-    totalConversations,
-  ] = await Promise.all([
-    prisma.teacherProfile.count({ where: { status: "SUSPENDED" } }),
-    prisma.course.count(),
-    prisma.course.count({ where: { status: "PUBLISHED" } }),
-    prisma.course.count({ where: { status: "DRAFT" } }),
-    prisma.courseEnrollment.count(),
-    prisma.courseEnrollment.count({ where: { status: "ACCEPTED" } }),
-    prisma.courseEnrollment.count({ where: { status: "PENDING" } }),
-    prisma.assignment.count(),
-    prisma.assignment.count({ where: { status: "PUBLISHED" } }),
-    prisma.assignmentSubmission.count(),
-    prisma.classSession.count(),
-    prisma.classSession.count({ where: { startTime: { gte: new Date() } } }),
-    prisma.conversation.count(),
-  ]);
-
-  return {
-    suspendedTeachers,
-    totalCourses,
-    publishedCourses,
-    draftCourses,
-    totalEnrollments,
-    acceptedEnrollments,
-    pendingEnrollments,
-    totalAssignments,
-    publishedAssignments,
-    totalSubmissions,
-    totalClasses,
-    upcomingClasses,
-    totalConversations,
-  };
-}
+// Platform stats are now included in getDashboardCounts for efficiency.
 
 // ─── Recent Activity ───────────────────────────────────────────────
 
@@ -373,12 +379,12 @@ export async function getRecentActivity(): Promise<ActivityEvent[]> {
 
   const [teachers, courses, enrollments] = await Promise.all([
     prisma.teacherProfile.findMany({
-      take: 10,
+      take: 5,
       orderBy: { createdAt: "desc" },
       include: { user: { select: { firstName: true, lastName: true } } },
     }),
     prisma.course.findMany({
-      take: 10,
+      take: 5,
       orderBy: { createdAt: "desc" },
       include: {
         teacherProfile: { include: { user: { select: { firstName: true, lastName: true } } } },
@@ -386,7 +392,7 @@ export async function getRecentActivity(): Promise<ActivityEvent[]> {
       },
     }),
     prisma.courseEnrollment.findMany({
-      take: 10,
+      take: 5,
       orderBy: { createdAt: "desc" },
       include: {
         studentUser: { select: { firstName: true, lastName: true } },
@@ -401,8 +407,8 @@ export async function getRecentActivity(): Promise<ActivityEvent[]> {
     const name = [t.user.firstName, t.user.lastName].filter(Boolean).join(" ") || "Unknown";
     events.push({
       type: "NEW_TEACHER",
-      title: "New Teacher Registered",
-      description: `${name} registered as a teacher`,
+      title: "New Tutor Registered",
+      description: `${name} registered as a tutor`,
       date: t.createdAt,
     });
   }
@@ -523,7 +529,7 @@ export async function suspendTeacher(
     select: { id: true, role: true, clerkUserId: true },
   });
   if (!user || user.role !== "TEACHER") {
-    return { success: false, error: "Teacher not found." };
+    return { success: false, error: "Tutor not found." };
   }
 
   const profile = await prisma.teacherProfile.findUnique({
@@ -531,7 +537,7 @@ export async function suspendTeacher(
     select: { id: true },
   });
   if (!profile) {
-    return { success: false, error: "Teacher profile not found." };
+    return { success: false, error: "Tutor profile not found." };
   }
 
   await prisma.teacherProfile.update({
@@ -560,7 +566,7 @@ export async function unsuspendTeacher(userId: string): Promise<TeacherActionRes
     select: { id: true, role: true, clerkUserId: true },
   });
   if (!user || user.role !== "TEACHER") {
-    return { success: false, error: "Teacher not found." };
+    return { success: false, error: "Tutor not found." };
   }
 
   const profile = await prisma.teacherProfile.findUnique({
@@ -568,7 +574,7 @@ export async function unsuspendTeacher(userId: string): Promise<TeacherActionRes
     select: { id: true },
   });
   if (!profile) {
-    return { success: false, error: "Teacher profile not found." };
+    return { success: false, error: "Tutor profile not found." };
   }
 
   await prisma.teacherProfile.update({
@@ -1401,20 +1407,12 @@ export async function uploadTeacherPhoto(
 ): Promise<UploadTeacherPhotoResult> {
   const clerkUserId = await requireAdmin();
 
-  const adminUser = await prisma.user.findUnique({
-    where: { id: clerkUserId },
-    select: { id: true },
-  });
-  if (!adminUser) {
-    return { success: false, error: "Admin user not found." };
-  }
-
   const user = await prisma.user.findUnique({
     where: { id: teacherUserId },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "TEACHER") {
-    return { success: false, error: "Teacher not found." };
+    return { success: false, error: "Tutor not found." };
   }
 
   const profile = await prisma.teacherProfile.findUnique({
@@ -1422,7 +1420,7 @@ export async function uploadTeacherPhoto(
     select: { id: true, profilePhotoUrl: true },
   });
   if (!profile) {
-    return { success: false, error: "Teacher profile not found." };
+    return { success: false, error: "Tutor profile not found." };
   }
 
   const file = formData.get("photo") as File | null;
@@ -1457,7 +1455,7 @@ export async function uploadTeacherPhoto(
 
   await prisma.adminAuditLog.create({
     data: {
-      adminUserId: adminUser.id,
+      adminUserId: clerkUserId,
       action: "TEACHER_PHOTO_UPDATED",
       targetType: "TeacherProfile",
       targetId: profile.id,

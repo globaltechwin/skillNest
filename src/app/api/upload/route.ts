@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       select: { id: true, profilePhotoUrl: true },
     });
     if (!profile) {
-      return NextResponse.json({ error: "Teacher profile not found." }, { status: 404 });
+      return NextResponse.json({ error: "Tutor profile not found." }, { status: 404 });
     }
 
     const formData = await request.formData();

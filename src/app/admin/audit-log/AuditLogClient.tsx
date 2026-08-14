@@ -11,8 +11,8 @@ type Props = {
 
 const ACTION_OPTIONS = [
   { value: "ALL", label: "All Actions" },
-  { value: "TEACHER_SUSPENDED", label: "Teacher Suspended" },
-  { value: "TEACHER_UNSUSPENDED", label: "Teacher Unsuspended" },
+  { value: "TEACHER_SUSPENDED", label: "Tutor Suspended" },
+  { value: "TEACHER_UNSUSPENDED", label: "Tutor Unsuspended" },
   { value: "COURSE_ARCHIVED", label: "Course Archived" },
 ];
 

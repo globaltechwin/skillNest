@@ -18,13 +18,13 @@ export interface SkillNestUser {
 }
 
 /**
- * Fetch the SkillNest user record by Clerk user ID.
+ * Fetch the SkillNest user record by internal user ID.
  */
 export async function getSkillNestUser(
-  clerkUserId: string
+  userId: string
 ): Promise<SkillNestUser | null> {
   const user = await prisma.user.findUnique({
-    where: { id: clerkUserId },
+    where: { id: userId },
   });
 
   if (!user) return null;
@@ -43,9 +43,9 @@ export async function getSkillNestUser(
  * Get the user's role from the database.
  */
 export async function getUserRole(
-  clerkUserId: string
+  userId: string
 ): Promise<UserRole | null> {
-  const user = await getSkillNestUser(clerkUserId);
+  const user = await getSkillNestUser(userId);
   return user?.role ?? null;
 }
 

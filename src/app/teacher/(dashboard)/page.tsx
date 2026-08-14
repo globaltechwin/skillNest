@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/custom";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Users, BookOpen, Calendar, FileText, Clock, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -14,23 +13,19 @@ function formatTime(date: Date): string {
 
 export default async function TeacherOverviewPage() {
   const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) redirect("/login");
+  if (!clerkUserId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: clerkUserId },
-    select: { id: true, firstName: true, role: true },
+    select: { id: true, firstName: true },
   });
-  if (!user || user.role !== "TEACHER") redirect("/login");
+  if (!user) return null;
 
   const profile = await prisma.teacherProfile.findUnique({
     where: { userId: user.id },
-    select: {
-      id: true,
-      status: true,
-      subjects: { include: { subject: true } },
-    },
+    select: { id: true },
   });
-  if (!profile || profile.status !== "APPROVED") redirect("/login");
+  if (!profile) return null;
 
   const today = new Date();
   const startOfDay = new Date(today);
@@ -91,7 +86,7 @@ export default async function TeacherOverviewPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {greeting}, {user.firstName || "Teacher"} 👋
+          {greeting}, {user.firstName || "Tutor"} 👋
         </h1>
         <p className="text-muted-foreground mt-1">
           Here&apos;s what&apos;s happening with your classes today.

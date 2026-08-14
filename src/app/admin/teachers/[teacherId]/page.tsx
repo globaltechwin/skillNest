@@ -75,7 +75,7 @@ export default async function AdminTeacherDetailPage({
   if (!teacher) notFound();
 
   const { user, profile, subjects, qualifications, availability, courseCount, enrolledStudentCount } = teacher;
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ") || "Unnamed Teacher";
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ") || "Unnamed Tutor";
 
   return (
     <div className="space-y-6">
@@ -86,7 +86,7 @@ export default async function AdminTeacherDetailPage({
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
           <ArrowLeft className="size-4" />
-          Back to Teachers
+           Back to Tutors
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
