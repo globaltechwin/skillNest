@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "SkillNest - Explore. Discover. Achieve.",
   description:
     "SkillNest connects students with skilled tutors for online and offline learning.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
