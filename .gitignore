@@ -47,3 +47,4 @@ TEST_ACCOUNTS.txt
 
 # SQL backups
 *.sql
+!skillNest Database/*.sql
